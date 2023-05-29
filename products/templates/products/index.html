@@ -1,0 +1,83 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/nouislider.css' %}">
+{% endblock %}
+
+{% block content %}
+                <img src="{% static 'slider.png' %}" alt="" style="width: 95%; max-height: 400px; margin-bottom: 30px; border-radius: 12px;">
+                <div class="filter">
+                    <div class="category_filter">
+                        <img class="filter_logotype" src="{% static 'svg/category.svg' %}" alt="">
+                        <div class="form-group">
+                            <div class="dropdown">
+                                <button class="dropdown__button">Категория</button>
+                                <ul class="dropdown__list">
+                                    <li class="dropdown__list-item" data-value="clothes">Одежда</li>
+                                    <li class="dropdown__list-item" data-value="shoes">Обувь</li>
+                                    <li class="dropdown__list-item" data-value="accessories">Аксессуары</li>
+                                    <li class="dropdown__list-item" data-value="other">Другое</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="category_filter_button" type="submit"><img class="filter_logotype" src="{% static 'svg/arrow_down.svg' %}" alt=""><span>Сначала дешевые</span></button>
+                    <button class="category_filter_button" type="submit"><img class="filter_logotype" src="{% static 'svg/arrow_up.svg' %}" alt=""><span>Сначала дорогие</span></button>
+
+                    <div class="main_price_filter">
+                        <div class="price_filter"><img class="filter_logotype" src="{% static 'svg/rouble.svg' %}" alt="">Цена</div>
+                        <div class="filter_slider_filter">
+
+                            <div class="filters-price__slider" id="range-slider"></div>
+                            <div class="filter_price_inputs">
+                                <label class="filter_slider">
+                                    <span class="filter_price_text">от</span>
+                                    <input type="number" id="input-0" min="0" placeholder="500" max="100000" class="filter_input">
+                                    <span class="filter_price_text">₽</span>
+                                </label>
+                                <label class="filter_slider">
+                                    <span class="filter_price_text">до</span>
+                                    <input type="number" id="input-1" min="0" placeholder="999999" max="100000" class="filter_input">
+                                    <span class="filter_price_text">₽</span>
+                                </label>
+                            </div>
+
+                        </div>
+                        <button class="price_filter_button" type="submit">Применить</button>
+                    </div>
+
+                </div>
+                <div class="index_list" style="display: flex;">
+                    {% for product in object_list %}
+                    <div class="product">
+                        <div class="product_href">
+                            <div class="product_favorite_div">
+                                <img class="product_favorite" id="{{ product.id }}" src="{% static 'svg/heart.svg' %}" alt="">
+                            </div>
+                            <img class="product_image" src="{{ product.image.url }}" alt="">
+                            <a class="product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
+                                <div class="product_name_div"><span class="product_name">{{ product.name }}</span></div>
+                                <span class="product_price">{{ product.price }} ₽</span>
+                                <span class="border_line"></span>
+                                <span class="product_town">Калининградская область</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('img.product_favorite').each(function(i) {
+                $(this).click(function() {
+                    $('#' + (i+1)).toggleClass('product_favorite_active');
+                });
+            });
+        });
+    </script>
+    <script src="{% static 'js/nouislider.js' %}"></script>
+{% endblock %}

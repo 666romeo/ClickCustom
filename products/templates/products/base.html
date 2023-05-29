@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block css %} {% endblock %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap" rel="stylesheet">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="main_head">
+                <a class="main_logo" href="{% url 'index' %}">ClickCustom</a>
+                <div class="header_search">
+                  <form class="search_form">
+                    <input type="text" class="search_input" placeholder="Что будем искать?">
+                    <button type="button" class="search_button">
+                      <img src="{% static 'svg/search.svg' %}" alt="">
+                    </button>
+                  </form>
+                </div>
+                <div class="menu">
+                    <a class="menu_element" href="workshop.html?_ijt=7ue24dfmd95tdstq5io4er5dhg"><img src="{% static 'svg/catalog.svg' %}" alt="">Мастерская</a>
+                    <a class="menu_element" href="{% url 'index' %}"><img src="{% static 'svg/catalog.svg' %}" alt="">Каталог</a>
+                    <a class="menu_element" href="favorites.html?_ijt=7ue24dfmd95tdstq5io4er5dhg"><img src="{% static 'svg/favorites.svg' %}" alt="">Избранное</a>
+                    <a class="menu_element" onclick="document.getElementById('id01').style.display='block'"><img src="{% static 'svg/profile.svg' %}" alt="">Профиль</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="content">
+            <div class="main_body">
+                {% block content %} {% endblock %}
+            </div>
+        </section>
+        <footer>
+            <div class="main_footer">
+
+                <ul class="menu">
+                    <li><a href="{% url 'index' %}">Главная</a></li>
+                    <li><a href="about.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">О нас</a></li>
+                    <li><a href="confident.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">Политика конфиденциальности</a></li>
+                    <li><a href="#">Помощь</a></li>
+                    <li><a href="oferta.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">Оферта</a></li>
+
+                </ul>
+                <ul class="social_icon">
+                    <li><a href="#" class="logo_social"><img src="{% static 'svg/tiktok.svg' %}" alt=""></a></li>
+                    <li><a href="#" class="logo_social"><img src="{% static 'svg/vkontakte.svg' %}" alt=""></a></li>
+                    <li><a href="#" class="logo_social"><img src="{% static 'svg/instagram.svg' %}" alt=""></a></li>
+                    <li><a href="#" class="logo_social"><img src="{% static 'svg/telegram.svg' %}" alt=""></a></li>
+
+                </ul>
+                <p>&copy 2023 ClickCustom | All Rights Reserved</p>
+
+            </div>
+        </footer>
+    </div>
+    <div id="id01" class="authorization_close">
+      <form class="authorization animate">
+          <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
+          <a class="authorization_logo" href="about.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">/// Mega ID</a>
+          <div class="authorization_label">Введите свою электронную почту</div>
+          <div class="authorization_b">Мы отправим вам код. Отвечать на сообщение не нужно. Код придет на указанную почту</div>
+        <div class="container1">
+            <input type="text" placeholder="example@gmail.com">
+            <button class="send_code" type="submit">Получить код</button>
+        </div>
+      </form>
+    </div>
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    {% block script %}
+    {% endblock %}
+    <script src="{% static 'js/range-slider.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script type="text/javascript">
+        window.onbeforeunload = function () {
+          window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
