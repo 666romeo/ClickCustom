@@ -66,7 +66,7 @@
     </div>
 {% if not user.is_authenticated %}
     <div id="id01" class="authorization_close">
-      <form action="{% url 'products:index' %}" method="post" class="authorization animate" style="height: 430px;">
+      <form method="post" class="authorization animate" style="height: 430px;">
           {% csrf_token %}
           <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
           <a class="authorization_logo">Авторизация</a>

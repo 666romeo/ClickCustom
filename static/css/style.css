@@ -324,7 +324,7 @@ footer p {
 
 /* Modal Content/Box */
 .authorization {
-    height: 390px;
+    height: 450px;
     display: flex;
     flex-direction: column;
     align-items: center;

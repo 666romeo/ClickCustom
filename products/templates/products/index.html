@@ -57,7 +57,7 @@
                                 <img class="product_favorite" id="{{ product.id }}" src="{% static 'svg/heart.svg' %}" alt="">
                             </div>
                             <img class="product_image" src="{{ product.image.url }}" alt="">
-                            <a class="product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
+                            <a class="product_info" href="{% url 'products:product' product.id %}">
                                 <div class="product_name_div"><span class="product_name">{{ product.name }}</span></div>
                                 <span class="product_price">{{ product.price }} ₽</span>
                                 <span class="border_line"></span>

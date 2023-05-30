@@ -1,0 +1,147 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+{% for item in object_list %}
+                <div class="product_content_start">
+                    <div class="product_detail_photos">
+                        <div class="carousel">
+                            <button class="carousel_button_previous" onclick="onPrev();"><img src="{% static 'svg/arrow_up.svg' %}" alt=""></button>
+                            <ul class="slides">
+                                <li class="slide" data-active>
+                                    <img src="{{ item.image.url }}" alt="">
+                                </li>
+                                <li class="slide">
+                                    <img src="{{ item.image.url }}" alt="">
+                                </li>
+                                <li class="slide">
+                                    <img src="{{ item.image.url }}" alt="">
+                                </li>
+                                <li class="slide">
+                                    <img src="{{ item.image.url }}" alt="">
+                                </li>
+                                <li class="slide">
+                                    <img src="{{ item.image.url }}" alt="">
+                                </li>
+                                <li class="slide">
+                                    <img src="{{ item.image.url }}" alt="">
+                                </li>
+
+                            </ul>
+                            <button class="carousel_button_next" onclick="onNext();"><img src="{% static 'svg/arrow_down.svg' %}" alt=""></button>
+                        </div>
+
+
+                    </div>
+                    <div class="detail_main_photo_article">
+                        <div class="detail_main_photo_close"><img class="detail_main_photo_close_on" src="{% static 'svg/close.svg' %}" alt=""></div>
+                        <div class="detail_product_loupe">
+                            <img class="loupe_photo" src="{% static 'svg/loupe_name_photo.svg' %}" alt="">
+                        </div>
+                        <img class="detail_product_main_photo" src="{{ item.image.url }}" alt="">
+                    </div>
+
+
+
+                    <div class="product_information">
+                        <div class="detail_product">
+                            <span class="detail_product_name">{{ item.name }}</span>
+                            <span class="detail_product_price">{{ item.price }}</span>
+                        </div>
+                        <div class="product_shallow">
+                            <div class="detail_product_logo_company">
+                                <img class="detail_product_logo" src="logo_jestem_psem.jpg" alt="">
+                                <div class="detail_product_shallow">
+                                    <a class="detail_product_brand" href="/">Jestem Psem</a>
+                                    <span class="detail_product_town">Калининградская область</span>
+                                    <span class="detail_product_rating">Рейтинг: 4,9 из 5</span>
+                                </div>
+                            </div>
+
+                            <button class="contact_with_brand">Связаться</button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="product_description">
+                    <span>Голубой шерстяной пиджак (upcycling) из детского шерстяного одеяла с золотыми пуговицами с рельефом якоря.
+
+Рукав на данной модели мерится от края горловины.
+
+Рекомендации по стирке:
+Стирать с изнаночной стороны при температуре не более 40 градусов с одеждой схожих цветов без использования отбеливателей
+Изделия с начесом гладить на режиме "хлопок" с лицевой стороны
+При глажке с лицевой и изнаночной стороны, не задевать, не гладить принт!
+
+Состав:
+
+    80% хлопок, 20% полиэстер.
+
+Размеры:
+
+    ● Ширина - 64 см
+    ● Длина - 70 см
+    ● Рукава - 74 см
+                    </span>
+                </div>
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('img.product_favorite').each(function(i) {
+                $(this).click(function() {
+                    $('#' + (i+1)).toggleClass('product_favorite_active');
+                });
+            });
+        });
+    </script>
+        <script src="{% static 'js/carousel.js' %}"></script>
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const mainPhoto = document.querySelector('.detail_product_main_photo')
+        slides.forEach(function (slide) {
+            slide.addEventListener('click', function () {
+                const activeSlide = document.querySelector('[data-active]')
+                delete activeSlide.dataset.active;
+                slide.dataset.active = true;
+                mainPhoto.src = ($('[data-active]').find("img").attr("src"))
+            });
+        });
+    </script>
+    <script>
+        const loupe = document.querySelector('.loupe_photo')
+        let activePhoto = document.querySelector('.detail_product_main_photo')
+
+        loupe.addEventListener('click', function () {
+            document.querySelector('html').style.background = "white"
+            document.querySelector('.product_detail_photos').style.display = "none"
+            document.querySelector('.main_head').style.display = "none"
+            document.querySelector('.product_information').style.display = "none"
+            document.querySelector('.product_description').style.display = "none"
+            document.querySelector('.loupe_photo').style.display = "none"
+            document.querySelector('footer').style.display = "none"
+            document.querySelector('header').style.display = "none"
+            document.querySelector('.detail_main_photo_close').classList.toggle('detail_main_photo_close--active')
+            activePhoto.classList.add('main_photo_loupe')
+        });
+
+        document.querySelector('.detail_main_photo_close').addEventListener('click', function () {
+            document.querySelector('.detail_main_photo_close').classList.remove('detail_main_photo_close--active')
+            document.querySelector('html').style.background = "var(--bg-color)"
+            document.querySelector('.product_detail_photos').style.display = "inline"
+            document.querySelector('.main_head').style.display = "flex"
+            document.querySelector('.product_information').style.display = "flex"
+            document.querySelector('.product_description').style.display = "inline"
+            document.querySelector('.loupe_photo').style.display = "inline"
+            document.querySelector('footer').style.display = "flex"
+            document.querySelector('header').style.display = "flex"
+            activePhoto.classList.remove('main_photo_loupe')
+        });
+    </script>
+{% endblock %}
