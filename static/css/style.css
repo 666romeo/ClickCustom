@@ -308,7 +308,6 @@ footer p {
 
 /* The Modal (background) */
 .authorization_close {
-
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -324,7 +323,7 @@ footer p {
 
 /* Modal Content/Box */
 .authorization {
-    height: 450px;
+    height: 370px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -334,6 +333,7 @@ footer p {
     border: 1px solid #888;
     width: 400px; /* Could be more or less, depending on screen size */
     border-radius: 20px;
+    overflow: auto; /* Enable scroll if needed */
 }
 
 .authorization_logo {
@@ -345,8 +345,8 @@ footer p {
 
 .authorization_label {
     margin-top: 30px;
-    margin-bottom: 30px;
-    font-size: 18px;
+
+    font-size: 16px;
 }
 
 .authorization_b {
@@ -356,39 +356,119 @@ footer p {
 
 .container1 {
     margin-top: 30px;
-    width: 90%;
+    width: 80%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.container1 input {
-    height: 45px;
-    width: 300px;
-    border-radius: 20px;
-    padding-left: 15px;
+
+.container1 input{
+    height: 30px;
+    width: 80%;
+    border-radius: 5px;
+    border: 2px solid #5D71DD;
+    padding: 0 15px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.send_code {
-    margin-top: 30px;
-    height: 45px;
-    width: 200px;
-    border-radius: 20px;
+.container1 input:last-child {
+    margin: 0;
 }
 
-/* The Close Button */
-.close {
-    /* Position it in the top right corner outside of the modal */
+.you_dont_have_account {
+    margin-top: 20px;
 
-    margin-left: 91%;
-    top: 0;
+}
+
+.buttons_authorization {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    justify-content: space-between;
+}
+
+.authorization_button {
+    margin-top: 5px;
+    height: 35px;
+    border-radius: 5px;
+    padding: 0 15px;
+    transition: all ease .35s;
+    font-size: 15px;
+    color: white;
+    background-color: #5D71DD;
+    border: none;
+}
+
+.authorization_button:hover {
+    background-color: #b1b7ee;
+}
+
+
+.registration_ask {
+    color: #5D71DD;
+    transition: all ease .35s;
+    cursor: pointer;
+}
+
+.registration_ask:hover {
+    color: #adb6ea;
+}
+
+
+
+.close1 {
+    margin-left: 88%;
+    margin-top: 5px;
     color: #000;
     font-size: 35px;
     font-weight: bold;
+    transition: all ease .35s;
+    cursor: pointer;
 }
 
-/* Close button on hover */
+.span_helpers {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+.close {
+    margin-right: 15px;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+    transition: all ease .35s;
+    cursor: pointer;
+}
+
+.back_to_login {
+    margin-left: 15px;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+    transition: all ease .35s;
+    cursor: pointer;
+}
+
+.error_form_registration {
+    margin-top: 15px;
+    font-size: 15px;
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    max-width: 70%;
+}
+
+.span_helpers span:hover, .close1:hover {
+    color: #939393;
+}
+
 .close:hover,
 .close:focus {
     color: red;

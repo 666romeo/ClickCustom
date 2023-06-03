@@ -5,12 +5,12 @@ from django.urls import reverse, reverse_lazy
 from django.template.context_processors import request
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
+from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth import authenticate, login
 from common.views import TitleMixin
 from products.models import Product, ProductCategory
 
-from users.forms import UserLoginForm, UserProfileForm, UserRegistrationForm
 
 
 class IndexListView(TitleMixin, ListView):
@@ -28,20 +28,6 @@ class IndexListView(TitleMixin, ListView):
         context['categories'] = ProductCategory.objects.all()
         return context
 
-    def post(self, request):
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            print(username)
-            print(password)
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect(request.META.get('HTTP_REFERER'))
-            else:
-                return redirect(request.META.get('HTTP_REFERER'))
-
-
 
 class DetailProductView(TitleMixin, ListView):
     model = Product
@@ -49,20 +35,6 @@ class DetailProductView(TitleMixin, ListView):
     success_url = reverse_lazy('products:product')
     title = 'ClickCustom - Личный кабинет'
 
-    def post(self, request):
-        if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            print(username)
-            print(password)
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-            else:
-                return redirect('index')
-
-        return HttpResponseRedirect(reverse('index'))
     def get_queryset(self, *args, **kwargs):
         queryset = super(DetailProductView, self).get_queryset()
         product_id = self.kwargs['pk']

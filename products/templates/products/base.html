@@ -30,7 +30,11 @@
                         <a class="menu_element" href="{% url 'users:logout' %}"><img src="{% static 'svg/back.svg' %}" alt="">Выйти</a>
                     {% else %}
                         <a class="menu_element" href="{% url 'index' %}"><img src="{% static 'svg/catalog.svg' %}" alt="">Каталог</a>
-                        <a class="menu_element" onclick="document.getElementById('id01').style.display='block'"><img src="{% static 'svg/profile.svg' %}" alt="">Авторизоваться</a>
+                        <a class="menu_element" onclick="
+                            document.getElementById('id01').style.display='none';
+                            document.getElementById('id02').style.display='none';
+                            document.getElementById('id03').style.display='none';
+                            document.getElementById('id01').style.display='block'; clearInputForm();"><img src="{% static 'svg/profile.svg' %}" alt="">Авторизоваться</a>
                     {% endif %}
                 </div>
             </div>
@@ -65,23 +69,193 @@
         </footer>
     </div>
 {% if not user.is_authenticated %}
+
+
+
     <div id="id01" class="authorization_close">
-      <form action="{% url 'products:index' %}" method="post" class="authorization animate" style="height: 430px;">
+        <form method="post" action="{% url 'users:log_in' %}" id="login" name="login" class="authorization animate">
+            {% csrf_token %}
+            <div class="span_helpers">
+                <span class="back_to_login"></span>
+                <div class="error_form_registration"></div>
+                <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
+            </div>
+            <a class="authorization_logo">Авторизация</a>
+            <div class="authorization_label" style="margin: 0; margin-top: 15px;">Введите данные своей учетной записи</div>
+            <div class="container1">
+                <input name="username" id="login_username" type="text" placeholder="Имя пользователя" required>
+                <input name="password" id="login_password" type="password" placeholder="Пароль" required>
+                <div class="buttons_authorization">
+                    <button class="authorization_button" type="submit" style="width: 110px;">Войти</button>
+                    <button onclick="document.getElementById('id01').style.display='none';
+                            document.getElementById('id03').style.display='block'; clearInputForm()"
+                            class="authorization_button" type="button">Забыли пароль?</button>
+                </div>
+                <span class="you_dont_have_account">У тебя нет аккаунта? <a class="registration_ask"
+                        onclick="document.getElementById('id01').style.display='none';
+                        document.getElementById('id02').style.display='block'; clearInputForm();">Зарегистрируйся
+                </a></span>
+            </div>
+        </form>
+    </div>
+
+
+
+    <div id="id02" class="authorization_close">
+        <form method="post" id="registration" name="registration" action="{% url 'users:registration' %}" class="authorization animate" style="height: 440px;">
+            {% csrf_token %}
+            <div class="span_helpers">
+                <span onclick="document.getElementById('id02').style.display='none';
+                document.getElementById('id01').style.display='block'; clearInputForm();" class="back_to_login">&larr;</span>
+                <div class="error_form_registration"></div>
+                <span onclick="document.getElementById('id02').style.display='none'" class="close">&times;</span>
+            </div>
+            <a class="authorization_logo">Регистрация</a>
+            <div class="authorization_label" style="margin: 0; margin-top: 15px;">Введите данные своей учетной записи</div>
+            <div class="container1">
+                <input id="email" name="email" type="email" placeholder="Адрес электронной почты" required>
+                <input id="rega_username" name="username" type="text" placeholder="Имя пользователя" required>
+                <input id="rega_password" name="password" type="password" placeholder="Пароль" required>
+                <input id="confirm_password" name="confirm_password" type="password" placeholder="Повторите Пароль" required>
+                <button id="submitButton" class="authorization_button" type="submit">Зарегистрироваться</button>
+            </div>
+        </form>
+    </div>
+
+
+
+    <div id="id03" class="authorization_close">
+      <form id="restore_account" action="" class="authorization animate" style="height: 320px;">
           {% csrf_token %}
-          <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
-          <a class="authorization_logo">Авторизация</a>
-          <div class="authorization_label" style="margin: 0; margin-top: 15px;">Введите данные своей учетной записи:</div>
+          <div class="span_helpers">
+              <span onclick="document.getElementById('id03').style.display='none';
+              document.getElementById('id01').style.display='block'; clearInputForm();" class="back_to_login">&larr;</span>
+              <div class="error_form_registration"></div>
+              <span onclick="document.getElementById('id03').style.display='none'" class="close">&times;</span>
+          </div>
+          <a class="authorization_logo" style="font-size: 26px;">Восстановление доступа</a>
+          <div class="authorization_label" style="margin: 0; margin-top: 15px; text-align: center">Введите адрес электронной почты, на которую зарегистрирован ваш аккаунт</div>
         <div class="container1">
-            <div class="authorization_b" style="margin-bottom: 5px;">Имя аккаунта</div>
-            <input class='authorization_username' name="username" type="text" placeholder="ExampleUsername" style="margin-bottom: 15px; text-align: center;">
-            <div class="authorization_b" style="margin-bottom: 5px;">Пароль</div>
-            <input class='authorization_password' name="password" type="text" placeholder="ExamplePassword" style="text-align: center;">
-            <button class="send_code" type="submit">Войти</button>
+            <input id="restore_input" class='authorization_username' name="email" type="text" placeholder="Адрес электронной почты">
+            <button class="authorization_button" type="submit">Отправить</button>
         </div>
       </form>
     </div>
+
+
+
 {% endif %}
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
+
+
+    <script>
+        function clearInputForm() {
+            $("#login_username").val("");
+            $("#login_password").val("");
+            $("#email").val("");
+            $("#rega_username").val("");
+            $("#rega_password").val("");
+            $("#confirm_password").val("");
+            $(".error_form_registration").text("");
+            $("#restore_input").val("");
+        }
+
+
+        $(document).ready(function() {
+            $("#registration").submit(function(event) {
+                event.preventDefault();
+
+                let password = $("#rega_password").val();
+                let confirmPassword = $("#confirm_password").val();
+
+                if (password !== confirmPassword) {
+                    $(".error_form_registration").text("Пароли не совпадают.");
+                } else {
+                    let email = $("#email").val();
+                    let username = $("#rega_username").val();
+                    checkUsernameExists(email, username);
+                }
+            });
+
+            $("#restore_account").submit(function(event) {
+                event.preventDefault();
+
+                let email = $("#restore_input").val();
+                if (email !== "") {
+                    checkEmailExists(email);
+                }
+            });
+
+            $("#login").submit(function(event) {
+                event.preventDefault();
+                let username = $("#login_username").val();
+                let password = $("#login_password").val();
+                if (username !== "") {
+                    checkUserCredentials(username, password);
+                }
+            });
+        });
+
+        function checkUsernameExists(email, username) {
+            $.ajax({
+                url: 'users/check_user_exists/',
+                data: {
+                    email: email,
+                    username: username
+                },
+                success: function(response) {
+                    if (response.email_taken) {
+                        $(".error_form_registration").text("Пользователь с таким адресом электронной почты уже существует.").css("font-size", "13px").css("color", "red");
+                    } else if (response.username_taken) {
+                        $(".error_form_registration").text("Пользователь с таким именем уже существует.").css("font-size", "14px").css("color", "red");
+                    } else {
+                        $(".error_form_registration").text("");
+                        $("#registration").unbind('submit').submit();
+                    }
+                }
+            });
+        }
+
+        function checkEmailExists(email) {
+            $.ajax({
+                url: 'users/check_email_exists/',
+                data: {
+                    email: email
+                },
+                success: function(response) {
+                    if (response.email_taken) {
+                        $(".error_form_registration").text("Инструкция по восстановлению пароля отправлена на указанный электронный адрес").css("font-size", "13px").css("color", "green");
+
+                    } else {
+                        $(".error_form_registration").text("Пользователь с таким адресом электронной почты не существует.").css("font-size", "13px").css("color", "red");
+                    }
+                }
+            });
+        }
+
+        function checkUserCredentials() {
+            let username = $("#login_username").val();
+            let password = $("#login_password").val();
+
+            // Отправляем AJAX-запрос на сервер для проверки учетных данных пользователя
+            $.ajax({
+                url: 'users/check_user_credentials/',
+                data: {
+                    username: username,
+                    password: password
+                },
+                success: function(response) {
+                    if (response.credentials_valid) {
+                        $(".error_form_registration").text(""); // Очищаем сообщение об ошибке
+                        // Здесь можно выполнить дополнительные действия, например, выполнить вход пользователя
+                        $("#login").unbind('submit').submit(); // Продолжить отправку формы
+                    } else {
+                        $(".error_form_registration").text("Неправильное имя пользователя или пароль.");
+                    }
+                }
+            });
+        }
+    </script>
     {% block script %}
     {% endblock %}
     <script src="{% static 'js/range-slider.js' %}"></script>

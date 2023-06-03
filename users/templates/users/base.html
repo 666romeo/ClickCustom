@@ -66,17 +66,69 @@
     </div>
 {% if not user.is_authenticated %}
     <div id="id01" class="authorization_close">
-      <form method="post" class="authorization animate" style="height: 430px;">
+      <form id="authorization" name="authorization" action="{% url 'users:authorization' %}" method="post" class="authorization animate">
           {% csrf_token %}
-          <span onclick="document.getElementById('id01').style.display='none'" class="close">&times;</span>
+          <span onclick="document.getElementById('id01').style.display='none'" class="close1">&times;</span>
           <a class="authorization_logo">Авторизация</a>
-          <div class="authorization_label" style="margin: 0; margin-top: 15px;">Введите данные своей учетной записи:</div>
+          <div class="authorization_label" style="margin: 0; margin-top: 15px;">Введите данные своей учетной записи</div>
         <div class="container1">
-            <div class="authorization_b" style="margin-bottom: 5px;">Имя аккаунта</div>
-            <input class='authorization_username' name="username" type="text" placeholder="ExampleUsername" style="margin-bottom: 15px; text-align: center;">
-            <div class="authorization_b" style="margin-bottom: 5px;">Пароль</div>
-            <input class='authorization_password' name="password" type="text" placeholder="ExamplePassword" style="text-align: center;">
-            <button class="send_code" type="submit">Войти</button>
+
+            <input name="username" type="text" placeholder="Имя пользователя">
+
+            <input name="password" type="text" placeholder="Пароль">
+            <div class="buttons_authorization">
+                <button class="authorization_button" type="submit" style="width: 110px;">Войти</button>
+                <button onclick="document.getElementById('id01').style.display='none'
+                        document.getElementById('id03').style.display='block'"
+                        class="authorization_button" type="button">Забыли пароль?</button>
+            </div>
+            <span class="you_dont_have_account">У тебя нет аккаунта? <a class="registration_ask"
+                    onclick="document.getElementById('id01').style.display='none';
+                    document.getElementById('id02').style.display='block'">Зарегистрируйся
+            </a></span>
+        </div>
+      </form>
+    </div>
+    <div id="id02" class="authorization_close">
+      <form id="registration" name="registration" action="{% url 'users:registration' %}" method="post" class="authorization animate" style="height: 440px;">
+          {% csrf_token %}
+          <div class="span_helpers">
+              <span onclick="document.getElementById('id02').style.display='none';
+              document.getElementById('id01').style.display='block'" class="back_to_login">&larr;</span>
+              <span onclick="document.getElementById('id02').style.display='none'" class="close">&times;</span>
+          </div>
+          <a class="authorization_logo">Регистрация</a>
+          <div class="authorization_label" style="margin: 0; margin-top: 15px;">Введите данные своей учетной записи</div>
+        <div class="container1">
+
+            <input name="email" type="text" placeholder="Адресс электронной почты">
+
+            <input name="username" type="text" placeholder="Имя пользователя">
+
+            <input name="password" type="text" placeholder="Пароль">
+
+            <input name="confirm_password" type="text" placeholder="Повторите пароль">
+
+            <button class="authorization_button" type="submit">Зарегистрироваться</button>
+
+        </div>
+      </form>
+    </div>
+    <div id="id03" class="authorization_close">
+      <form id="restore" name="restore" class="authorization animate" style="height: 320px;">
+          {% csrf_token %}
+          <div class="span_helpers">
+              <span onclick="document.getElementById('id02').style.display='none';
+              document.getElementById('id01').style.display='block'" class="back_to_login">&larr;</span>
+              <span onclick="document.getElementById('id02').style.display='none'" class="close">&times;</span>
+          </div>
+          <a class="authorization_logo" style="font-size: 26px;">Восстановление доступа</a>
+          <div class="authorization_label" style="margin: 0; margin-top: 15px; text-align: center">Введите адресс электронной почты, на которую зарегистрирован ваш аккаунт</div>
+        <div class="container1">
+            <input class='authorization_username' name="email" type="text" placeholder="Адресс электронной почты">
+            <button class="authorization_button" type="submit">Отправить</button>
+            <span style="font-size: 12px; margin-top: 15px;">Инструкция отправлена на указанную почту</span>
+
         </div>
       </form>
     </div>
