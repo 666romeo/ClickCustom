@@ -10,6 +10,8 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth import authenticate, login
 from common.views import TitleMixin
 from products.models import Product, ProductCategory
+from django.shortcuts import get_object_or_404, redirect
+from users.models import RecentlyViewed, User
 
 
 
@@ -32,10 +34,35 @@ class IndexListView(TitleMixin, ListView):
 class DetailProductView(TitleMixin, ListView):
     model = Product
     template_name = 'products/product.html'
-    success_url = reverse_lazy('products:product')
     title = 'ClickCustom - Личный кабинет'
 
     def get_queryset(self, *args, **kwargs):
-        queryset = super(DetailProductView, self).get_queryset()
         product_id = self.kwargs['pk']
+        product = get_object_or_404(Product, pk=product_id)
+        recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
+        max_items = 5
+
+        if recent_items.count() >= max_items:
+            oldest_timestamp = recent_items[max_items - 1].timestamp
+            recent_items.exclude(timestamp__gte=oldest_timestamp).delete()
+        print(recent_items.values_list('product_id', flat=True))
+        if product_id in recent_items.values_list('product_id', flat=True):
+            recent_items.filter(product_id=product_id).delete()
+        print(recent_items.values_list('product_id', flat=True))
+        RecentlyViewed.objects.create(user=self.request.user, product=product)
         return Product.objects.filter(id=product_id)
+
+
+class AboutView(TitleMixin, TemplateView):
+    template_name = 'products/about.html'
+    title = 'ClickCustom - О нас'
+
+
+class ConfidentView(TitleMixin, TemplateView):
+    template_name = 'products/confident.html'
+    title = 'ClickCustom - Политика конфиденциальности'
+
+
+class OfertaView(TitleMixin, TemplateView):
+    template_name = 'products/oferta.html'
+    title = 'ClickCustom - Оферта'

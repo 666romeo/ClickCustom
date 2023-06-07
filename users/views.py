@@ -12,17 +12,119 @@ from users.models import User
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
+from django.shortcuts import render
+from django.views.generic.list import ListView
+from django.views import View
+import os
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404, HttpResponse, HttpResponseForbidden
+from users.models import RecentlyViewed
+
+class UserProfileEdit(TitleMixin, LoginRequiredMixin, View):
+    model = User
+    form_class = UserProfileForm
+    template_name = 'users/profile_edit.html'
+    title = 'ClickCustom - Личный кабинет'
+
+    def get(self, request, *args, **kwargs):
+        user_id = self.kwargs['pk']
+        if request.user.id != user_id:
+            # Если текущий пользователь не соответствует запрошенному профилю
+            return redirect('/profile/{}/edit'.format(request.user.id))
+
+        user = User.objects.get(id=user_id)
+        form = self.form_class()
+        context = {
+            'user': user,
+            'form': form,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        user_id = self.kwargs['pk']
+        if request.user.id != user_id:
+            # Если текущий пользователь не соответствует запрошенному профилю
+            # Вы можете вернуть ошибку 403 Forbidden или перенаправить на другую страницу
+            return HttpResponseForbidden("Вы не имеете доступа к этому профилю.")
+
+        user = User.objects.get(id=user_id)
+        form = self.form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            # Удаление предыдущего изображения пользователя
+            if user.image and 'image' in request.FILES:
+                self.delete_previous_image(user.image.path, user)
+
+            # Сохранение нового изображения пользователя
+            image = form.cleaned_data['image']
+            if image:
+                user.image = image
+                user.save()
+
+        context = {
+            'user': user,
+            'form': form,
+        }
+        return render(request, self.template_name, context)
+
+    def delete_previous_image(self, image_path, user):
+        if os.path.isfile(image_path):
+            os.remove(image_path)
+            user.image = None
+            user.save()
 
 
-class UserProfileView(TitleMixin, UpdateView):
+class UserProfileView(TitleMixin, LoginRequiredMixin, View):
     model = User
     form_class = UserProfileForm
     template_name = 'users/profile.html'
-    success_url = reverse_lazy('users:profile')
     title = 'ClickCustom - Личный кабинет'
 
-    def get_success_url(self):
-        return reverse_lazy('users:profile', args=(self.object.id,))
+    def get(self, request, *args, **kwargs):
+        user_id = self.kwargs['pk']
+        user = User.objects.get(id=user_id)
+        form = self.form_class()
+        recently_viewed = RecentlyViewed.objects.filter(user=user).order_by('-timestamp')
+        print(recently_viewed.count())
+        print(recently_viewed.values_list('product_id', flat=True))
+        context = {
+            'user': user,
+            'form': form,
+            'recently_viewed': recently_viewed[:5],
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        user_id = self.kwargs['pk']
+        if request.user.id != user_id:
+            return HttpResponseForbidden("Вы не имеете доступа к этому профилю.")
+
+        user = User.objects.get(id=user_id)
+        form = self.form_class(request.POST, request.FILES)
+
+        if form.is_valid():
+            # Удаление предыдущего изображения пользователя
+            if user.image and 'image' in request.FILES:
+                self.delete_previous_image(user.image.path, user)
+
+            # Сохранение нового изображения пользователя
+            image = form.cleaned_data['image']
+            if image:
+                user.image = image
+                user.save()
+
+        context = {
+            'user': user,
+            'form': form,
+        }
+        return render(request, self.template_name, context)
+
+    def delete_previous_image(self, image_path, user):
+        if os.path.isfile(image_path):
+            os.remove(image_path)
+            # Обновление поля изображения пользователя
+            user.image = None
+            user.save()
 
 
 def logout(request):

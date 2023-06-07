@@ -8,65 +8,46 @@
 {% block content %}
                 <div class="profile_content">
                     <div class="profile_img_block">
-                        <img class="profile_img" src="{% static 'svg/profile.svg' %}" alt="">
-                        <button>Выбрать изображение</button>
+                        {% if user.image %}
+                            <img class="profile_img" src="{{ user.image.url }}" alt="">
+                        {% else %}
+                            <img class="profile_img" src="{% static 'svg/profile.svg' %}" alt="">
+                        {% endif %}
+                        {% if user.is_authenticated and user.id == request.user.id %}
+                            <a href="{% url 'users:profile_edit' user.id %}" class="upload_avatar_edit" style="min-width: 100%">Редактировать информацию</a>
+                        {% endif %}
                     </div>
 
                     <div class="profile_information">
-                        <div class="profile_name">Имя: <input type="text"></div>
-                        <div class="profile_country">Город: <input type="text"></div>
-                        <button>Сохранить</button>
+                        <div class="profile_input">Имя:<span style="margin-left: 61px;">{{ user.username }}</span></div>
+                        <div class="profile_input">Email:<span style="margin-left: 51px;">{{ user.email }}</span></div>
+                        {% if user.town %}<div class="profile_input">Регион:<span style="margin-left: 35px;">{{ user.town }}</span></div>{% endif %}
+                        {% if user.description %}<div class="profile_input">О продавце: <textarea class="profile_description" readonly>{{ user.description }}</textarea></div>{% endif %}
                     </div>
-
                 </div>
 
-                <span class="border_line_profile"></span>
 
+
+
+                {% if user.is_authenticated and user.id == request.user.id %}
+                <span class="border_line_profile"></span>
                 <div class="last_views_block">
 
                     <span class="last_views_span">Недавно просмотренные</span>
 
                     <div class="last_views_products">
-
+                    {% for item in recently_viewed %}
                         <div class="last_view_product">
                             <div class="last_view_product_href">
-                                <a class="last_view_product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
-                                    <img class="last_view_product_image" src="{% static 'product4.png' %}" alt="">
+                                <a class="last_view_product_info" href="{% url 'product:product' item.product.pk %}">
+                                    <img class="last_view_product_image" src="{{ item.product.image.url }}" alt="">
                                 </a>
                             </div>
                         </div>
-                        <div class="last_view_product">
-                            <div class="last_view_product_href">
-                                <a class="last_view_product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
-                                    <img class="last_view_product_image" src="{% static 'product1.png' %}" alt="">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="last_view_product">
-                            <div class="last_view_product_href">
-                                <a class="last_view_product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
-                                    <img class="last_view_product_image" src="{% static 'product3.png' %}" alt="">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="last_view_product">
-                            <div class="last_view_product_href">
-                                <a class="last_view_product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
-                                    <img class="last_view_product_image" src="{% static 'product2.png' %}" alt="">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="last_view_product">
-                            <div class="last_view_product_href">
-                                <a class="last_view_product_info" href="product.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">
-                                    <img class="last_view_product_image" src="{% static 'product4.png' %}" alt="">
-                                </a>
-                            </div>
-                        </div>
-
+                    {% endfor %}
                     </div>
-
                 </div>
+                {% endif %}
 {% endblock %}
 
 {% block script %}

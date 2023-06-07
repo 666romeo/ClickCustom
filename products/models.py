@@ -6,6 +6,7 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=128, unique=True)
     description = models.TextField(null=True, blank=True)
 
+
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categoryes'
@@ -21,6 +22,7 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     image = models.ImageField(upload_to='products_images', null=True, blank=True)
     category = models.ForeignKey(to=ProductCategory, on_delete=models.CASCADE)
+    #author = models.CharField(max_length=128, unique=True)
 
     class Meta:
         verbose_name = 'Product'
@@ -29,5 +31,13 @@ class Product(models.Model):
 
     def __str__(self):
         return f'Продукт: {self.name} | Категория: {self.category.name}'
+
+
+class ProductImages(models.Model):
+    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='product_images')
+
+    def __str__(self):
+        return f'Изображение продукта: {self.product.name}'
 
 

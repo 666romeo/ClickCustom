@@ -1277,40 +1277,189 @@ h4 {
     font-size: 20px;
 }
 
+.index_list {
+    display: flex;
+    flex-wrap: wrap;
+}
 
 .profile_content {
     display: flex;
     flex-direction: row;
-    margin-bottom: 105px;
-    margin-top: 20px;
-    width: 95%;
-    justify-content: center;
+    margin-bottom: 55px;
+    margin-top: 5px;
     align-content: center;
-    align-items: center;
+    align-items: flex-start;
+    min-width: 1320px;
+    width: 100%;
 }
 
 .profile_img_block {
     width: 300px;
     height: 300px;
-
+    margin-bottom: 30px;
     margin-right: 100px;
     display: flex;
     flex-direction: column;
 }
 
+.button_container_upload_avatar, .form_container_upload_avatar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form_container_upload_avatar input {
+    max-width: 250px;
+}
+
+.auto_button_container_upload_avatar {
+    color: red;
+    margin: 0;
+}
+
+
+
+input::-webkit-file-upload-button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    height: 28px;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 10px;
+    transition-duration: 0.1s;
+    border: none;
+    background-color: #5D71DD;
+    color: white;
+    padding: 0 20px;
+    margin-right: 15px;
+}
+
+
+input#id_image {
+    min-width: 300px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #f1f1f1;
+    color: green;
+}
+
+.button_upload_avatar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.upload_avatar, .upload_avatar_edit{
+
+    max-width: 300px;
+    width: 100%;
+    height: 28px;
+    text-align: center;
+    font-size: 13px;
+    border-radius: 10px;
+    transition-duration: 0.1s;
+    border: none;
+    background-color: #5D71DD;
+    color: white;
+
+}
+
+.upload_avatar_edit {
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.back_to_profile {
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.back_to_profile img {
+    height: 30px;
+    width: 30px;
+}
+
+.upload_avatar:hover, input::-webkit-file-upload-button:hover, .upload_avatar_edit:hover {
+    background-color: #a3b2ff;
+    color: white;
+}
+
 .profile_img {
-    width: 300px;
-    height: 300px;
-    border-radius: 150px;
-    margin-bottom: 30px;
-    border: 2px solid black;
+    min-width: 300px;
+    min-height: 300px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+
     background: white;
+}
+
+.profile_description {
+    font-size: 16px;
+    margin-top: 25px;
+    display: block;
+    min-width: 95%;
+    height: 190px;
+    flex: 1;
+    text-align: center;
+    border: none;
+    background-color: transparent;
+    overflow: hidden;
+    resize: none;
+}
+
+.profile_description:focus, .profile_description:hover {
+    border: none;
+    outline: none;
+}
+
+.edit_profile_description {
+    margin-top: 25px;
+    display: block;
+    min-width: 90%;
+    height: 160px;
+    flex: 1;
+    text-align: center;
+    font-size: 16px;
+    background-color: white;
+    border: 1px solid #5D71DD;
+    margin-left: 40px;
+    width: 300px;
+    padding: 5px;
+    border-radius: 5px;
+    overflow: hidden;
+    resize: none;
 }
 
 .profile_information {
     display: flex;
     flex-direction: column;
+    margin-top: 10px;
+    flex: 1;
+}
 
+.profile_input span {
+    font-size: 16px;
+    width: 300px;
+    padding: 5px;
+    text-align: center;
+}
+
+.profile_input input {
+    text-align: center;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid #5D71DD;
+    margin-left: 40px;
+    width: 300px;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .last_views_block {
@@ -1385,29 +1534,17 @@ h4 {
     border-bottom: 2px solid #DBDCDD;
 }
 
-.profile_name {
-
+.profile_input {
+    font-size: 16px;
     margin-bottom: 15px;
-}
-
-.profile_name input {
-    margin-left: 21px;
-}
-
-.profile_country {
-    margin-bottom: 15px;
-}
-
-.profile_country input {
-    margin-left: 10px;
 }
 
 .border_line_profile {
     margin-top: 15px;
-    width: 95%;
     margin-right: 15px;
     margin-left: 15px;
     border-top: 2px solid #DBDCDD;
+    width: 100%;
 }
 
 .content_header_menu {

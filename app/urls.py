@@ -24,8 +24,8 @@ from products.views import IndexListView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexListView.as_view(), name='index'),
-    path('users/', include('users.urls', namespace='users')),
-    path('products/', include('products.urls', namespace='products')),
+    path('profile/', include('users.urls', namespace='users')),
+    path('', include('products.urls', namespace='products')),
 ]
 
 if settings.DEBUG:

@@ -26,7 +26,7 @@
                         <a class="menu_element" href="workshop.html?_ijt=7ue24dfmd95tdstq5io4er5dhg"><img src="{% static 'svg/catalog.svg' %}" alt="">Мастерская</a>
                         <a class="menu_element" href="{% url 'index' %}"><img src="{% static 'svg/catalog.svg' %}" alt="">Каталог</a>
                         <a class="menu_element" href="favorites.html?_ijt=7ue24dfmd95tdstq5io4er5dhg"><img src="{% static 'svg/favorites.svg' %}" alt="">Избранное</a>
-                        <a class="menu_element" href="{% url 'users:profile' user.id %}"><img src="{% static 'svg/profile.svg' %}" alt="">{{ user.username }}</a>
+                        <a class="menu_element" href="{% url 'users:profile' request.user.id %}"><img src="{% static 'svg/profile.svg' %}" alt="">{{ request.user.username }}</a>
                         <a class="menu_element" href="{% url 'users:logout' %}"><img src="{% static 'svg/back.svg' %}" alt="">Выйти</a>
                     {% else %}
                         <a class="menu_element" href="{% url 'index' %}"><img src="{% static 'svg/catalog.svg' %}" alt="">Каталог</a>
@@ -43,14 +43,12 @@
         </section>
         <footer>
             <div class="main_footer">
-
                 <ul class="menu">
                     <li><a href="{% url 'index' %}">Главная</a></li>
-                    <li><a href="about.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">О нас</a></li>
-                    <li><a href="confident.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">Политика конфиденциальности</a></li>
-                    <li><a href="#">Помощь</a></li>
-                    <li><a href="oferta.html?_ijt=7ue24dfmd95tdstq5io4er5dhg">Оферта</a></li>
-
+                    <li><a href="{% url 'product:about' %}">О нас</a></li>
+                    <li><a href="{% url 'product:confident' %}">Политика конфиденциальности</a></li>
+                    <li><a href="{% url 'index' %}">Помощь</a></li>
+                    <li><a href="{% url 'product:oferta' %}">Оферта</a></li>
                 </ul>
                 <ul class="social_icon">
                     <li><a href="#" class="logo_social"><img src="{% static 'svg/tiktok.svg' %}" alt=""></a></li>
