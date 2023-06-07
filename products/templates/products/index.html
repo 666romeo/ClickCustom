@@ -54,7 +54,14 @@
                     <div class="product">
                         <div class="product_href">
                             <div class="product_favorite_div">
-                                <img class="product_favorite" id="{{ product.id }}" src="{% static 'svg/heart.svg' %}" alt="">
+                                {% csrf_token %}
+                                {% if request.user.is_authenticated %}
+                                    {% if product.id in favorite_product_ids %}
+                                        <img class="product_favorite product_favorite_active" id="{{ product.id }}" src="{% static 'svg/heart.svg' %}" alt="">
+                                    {% else %}
+                                        <img class="product_favorite" id="{{ product.id }}" src="{% static 'svg/heart.svg' %}" alt="">
+                                    {% endif %}
+                                {% endif %}
                             </div>
                             <img class="product_image" src="{{ product.image.url }}" alt="">
                             <a class="product_info" href="{% url 'products:product' product.id %}">
@@ -71,13 +78,59 @@
 
 {% block script %}
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('img.product_favorite').each(function(i) {
+                let productId = i + 1;
                 $(this).click(function() {
-                    $('#' + (i+1)).toggleClass('product_favorite_active');
+                    let isFavorite = $('#' + productId).hasClass('product_favorite_active');
+                    if (isFavorite) {
+                        console.log('Удаляем');
+                        removeProductFromFavorite(productId);
+                    } else {
+                        console.log('Добавляем');
+                        addProductToFavorite(productId);
+                    }
                 });
             });
         });
+
+        function addProductToFavorite(productId) {
+            $('#' + productId).addClass('product_favorite_active');
+
+            $.ajax({
+                url: "{% url 'product:addProductToFavorite' %}",
+                data: {
+                id: productId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function(response) {
+                    if (response.id_exist) {
+                        console.log('Продукт добавлен в избранное');
+                    } else {
+                        console.log('Не удалось добавить продукт в избранное');
+                    }
+                }
+            });
+        }
+
+        function removeProductFromFavorite(productId) {
+            $('#' + productId).removeClass('product_favorite_active');
+
+            $.ajax({
+                url: "{% url 'product:removeProductFromFavorite' %}",
+                data: {
+                id: productId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                },
+                success: function(response) {
+                    if (response.id_exist) {
+                        console.log('Продукт удален из избранного');
+                    } else {
+                        console.log('Не удалось удалить продукт из избранного');
+                    }
+                }
+            });
+        }
     </script>
     <script src="{% static 'js/nouislider.js' %}"></script>
 {% endblock %}

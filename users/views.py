@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponse
 from common.views import TitleMixin
 from users.forms import UserProfileForm
-from users.models import User
+from users.models import User, RecentlyViewed, UserProductsFavorite
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
@@ -18,7 +18,7 @@ from django.views import View
 import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse, HttpResponseForbidden
-from users.models import RecentlyViewed
+
 
 class UserProfileEdit(TitleMixin, LoginRequiredMixin, View):
     model = User
@@ -85,8 +85,6 @@ class UserProfileView(TitleMixin, LoginRequiredMixin, View):
         user = User.objects.get(id=user_id)
         form = self.form_class()
         recently_viewed = RecentlyViewed.objects.filter(user=user).order_by('-timestamp')
-        print(recently_viewed.count())
-        print(recently_viewed.values_list('product_id', flat=True))
         context = {
             'user': user,
             'form': form,
@@ -137,7 +135,6 @@ def registration(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     confirm_password = request.POST.get('confirm_password')
-    print(email, username, password, confirm_password)
     if not username or not password or not confirm_password or not email:
         return redirect(request.META.get('HTTP_REFERER'))
     if password != confirm_password:
@@ -162,23 +159,18 @@ def log_in(request):
 def check_user_exists(request):
     email = request.GET.get('email', None)
     username = request.GET.get('username', None)
-    print(email)
-    print(username)
     data = {
         'email_taken': User.objects.filter(email=email).exists(),
         'username_taken': User.objects.filter(username=username).exists()
     }
-    print(data)
     return JsonResponse(data)
 
 
 def check_email_exists(request):
     email = request.GET.get('email', None)
-    print(email)
     data = {
         'email_taken': User.objects.filter(email=email).exists(),
     }
-    print(data)
     return JsonResponse(data)
 
 
