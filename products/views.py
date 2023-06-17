@@ -8,10 +8,13 @@ from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth import authenticate, login
 from common.views import TitleMixin
-from products.models import Product, ProductCategory
+from products.models import Product, ProductCategory, ProductImages
+from users.models import ProductAuthor
 from django.shortcuts import get_object_or_404, redirect
 from users.models import RecentlyViewed, User, UserProductsFavorite
 from django.http import JsonResponse
+from products.forms import ProductImagesForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class IndexListView(TitleMixin, ListView):
@@ -38,9 +41,9 @@ class DetailProductView(TitleMixin, ListView):
     template_name = 'products/product.html'
     title = 'ClickCustom - Личный кабинет'
 
-    def get_queryset(self, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         product_id = self.kwargs['pk']
-        product = get_object_or_404(Product, pk=product_id)
         recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
         max_items = 5
 
@@ -49,11 +52,19 @@ class DetailProductView(TitleMixin, ListView):
             recent_items.exclude(timestamp__gte=oldest_timestamp).delete()
         if product_id in recent_items.values_list('product_id', flat=True):
             recent_items.filter(product_id=product_id).delete()
-        RecentlyViewed.objects.create(user=self.request.user, product=product)
-        return Product.objects.filter(id=product_id)
+        RecentlyViewed.objects.create(user=self.request.user, product=get_object_or_404(Product, pk=product_id))
+
+        product = Product.objects.filter(id=product_id)
+        images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
+        author = ProductAuthor.objects.get(product=Product.objects.get(id=product_id))
+        print(author.author.username)
+        context['product'] = product
+        context['images'] = images
+        context['author'] = author.author
+        return context
 
 
-class UserFavoritesView(TitleMixin, ListView):
+class UserFavoritesView(TitleMixin, LoginRequiredMixin, ListView):
     model = UserProductsFavorite
     template_name = 'products/favorites.html'
     title = 'ClickCustom - Избранное'
@@ -66,6 +77,56 @@ class UserFavoritesView(TitleMixin, ListView):
         }
         return render(request, self.template_name, context)
 
+
+class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
+    form_class = ProductImagesForm
+    template_name = 'users/workshop.html'
+    title = 'ClickCustom - Workshop'
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        form = self.form_class()
+        context = {
+            'user': user,
+            'form': form,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        form = self.form_class(request.POST, request.FILES)
+
+        # Создаем новый товар
+        category_name = request.POST.get('category')
+        category = get_object_or_404(ProductCategory, name=category_name)
+        name = request.POST.get('name')
+        price = int(request.POST.get('price'))
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+        # Сохраняем товар в базе данных
+        product = Product.objects.create(
+            name=name,
+            price=price,
+            category=category,
+            description=description,
+            image=image,
+        )
+
+        # Создаем объекты ProductImages для каждой загруженной фотографии
+        images = request.FILES.getlist('images')
+        for img in images:
+            ProductImages.objects.create(
+                product=product,
+                image=img,
+            )
+
+        ProductAuthor.objects.create(
+            product=product,
+            author=user,
+        )
+
+        # Перенаправляем пользователя на страницу успешного создания товара
+        return redirect('index')
 
 
 def addProductToFavorite(request):

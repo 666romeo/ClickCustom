@@ -79,10 +79,12 @@
 {% block script %}
     <script type="text/javascript">
         $(document).ready(function() {
-            $('img.product_favorite').each(function(i) {
-                let productId = i + 1;
-                $(this).click(function() {
-                    let isFavorite = $('#' + productId).hasClass('product_favorite_active');
+            $('img.product_favorite').each(function() {
+                let $favoriteImage = $(this);
+                let productId = $favoriteImage.attr('id');
+
+                $favoriteImage.click(function() {
+                    let isFavorite = $favoriteImage.hasClass('product_favorite_active');
                     if (isFavorite) {
                         console.log('Удаляем');
                         removeProductFromFavorite(productId);
@@ -100,8 +102,8 @@
             $.ajax({
                 url: "{% url 'product:addProductToFavorite' %}",
                 data: {
-                id: productId,
-                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    id: productId,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 },
                 success: function(response) {
                     if (response.id_exist) {
@@ -119,8 +121,8 @@
             $.ajax({
                 url: "{% url 'product:removeProductFromFavorite' %}",
                 data: {
-                id: productId,
-                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    id: productId,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
                 },
                 success: function(response) {
                     if (response.id_exist) {
@@ -131,6 +133,7 @@
                 }
             });
         }
+
     </script>
     <script src="{% static 'js/nouislider.js' %}"></script>
 {% endblock %}

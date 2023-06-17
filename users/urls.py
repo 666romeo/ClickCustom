@@ -7,12 +7,13 @@ from users.views import UserProfileView, UserProfileEdit, log_in, registration, 
 app_name = 'users'
 
 urlpatterns = [
-    path('<int:pk>/', UserProfileView.as_view(), name='profile'),
-    path('<int:pk>/edit', UserProfileEdit.as_view(), name='profile_edit'),
+    path('profile/<int:pk>/', UserProfileView.as_view(), name='profile'),
+    path('profile/edit/<int:pk>/', UserProfileEdit.as_view(), name='profile_edit'),
+
     path('login/', log_in, name='log_in'),
     path('logout/', logout, name='logout'),
     path('registration/', registration, name='registration'),
-    path('check_user_exists/', check_user_exists, name='check_username'),
-    path('check_email_exists/', check_email_exists, name='check_email'),
-    path('check_user_credentials/', check_user_credentials, name='check_credentials'),
+    path('profile/check_user_exists/', check_user_exists, name='check_username'),
+    path('profile/check_email_exists/', check_email_exists, name='check_email'),
+    path('profile/check_user_credentials/', check_user_credentials, name='check_credentials'),
 ]

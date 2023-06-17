@@ -6,7 +6,7 @@ from users.models import User
 
 class UserProfileForm(UserChangeForm):
     image = forms.ImageField(widget=forms.FileInput(attrs={'accept': 'image/jpeg, image/png'}), required=False)
+
     class Meta:
         model = User
         fields = ['image']
-

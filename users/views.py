@@ -1,5 +1,6 @@
 from django.contrib import auth
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import HttpResponseRedirect, redirect
 from django.urls import reverse, reverse_lazy
@@ -18,6 +19,7 @@ from django.views import View
 import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse, HttpResponseForbidden
+from products.forms import ProductImagesForm
 
 
 class UserProfileEdit(TitleMixin, LoginRequiredMixin, View):
@@ -120,7 +122,6 @@ class UserProfileView(TitleMixin, LoginRequiredMixin, View):
     def delete_previous_image(self, image_path, user):
         if os.path.isfile(image_path):
             os.remove(image_path)
-            # Обновление поля изображения пользователя
             user.image = None
             user.save()
 

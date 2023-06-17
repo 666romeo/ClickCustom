@@ -23,7 +23,7 @@
                 </div>
                 <div class="menu">
                     {% if user.is_authenticated %}
-                        <a class="menu_element" href="workshop.html?_ijt=7ue24dfmd95tdstq5io4er5dhg"><img src="{% static 'svg/catalog.svg' %}" alt="">Мастерская</a>
+                        <a class="menu_element" href="{% url 'product:createproduct' %}"><img src="{% static 'svg/catalog.svg' %}" alt="">Создать объявление</a>
                         <a class="menu_element" href="{% url 'index' %}"><img src="{% static 'svg/catalog.svg' %}" alt="">Каталог</a>
                         <a class="menu_element" href="{% url 'product:favorites' %}"><img src="{% static 'svg/favorites.svg' %}" alt="">Избранное</a>
                         <a class="menu_element" href="{% url 'users:profile' request.user.id %}"><img src="{% static 'svg/profile.svg' %}" alt="">{{ request.user.username }}</a>
