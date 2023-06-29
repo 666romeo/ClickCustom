@@ -15,6 +15,9 @@ from users.models import RecentlyViewed, User, UserProductsFavorite
 from django.http import JsonResponse
 from products.forms import ProductImagesForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
+from PIL import Image
+from utils.remove_background import remove_background
 
 
 class IndexListView(TitleMixin, ListView):
@@ -80,7 +83,7 @@ class UserFavoritesView(TitleMixin, LoginRequiredMixin, ListView):
 
 class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
     form_class = ProductImagesForm
-    template_name = 'users/workshop.html'
+    template_name = 'products/workshop.html'
     title = 'ClickCustom - Workshop'
 
     def get(self, request, *args, **kwargs):
@@ -128,6 +131,23 @@ class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
         # Перенаправляем пользователя на страницу успешного создания товара
         return redirect('index')
 
+
+def remove_background_view(request):
+    if request.method == 'POST':
+        # Получение загруженного файла из запроса
+        uploaded_file = request.FILES['image']
+
+        # Удаление фона и получение закодированного изображения
+        encoded_image = remove_background(uploaded_file)
+        data = {
+            'encoded_image': encoded_image
+        }
+        return JsonResponse(data)
+
+    data = {
+        'error': 'error'
+    }
+    return JsonResponse(data)
 
 def addProductToFavorite(request):
     product_id = request.GET.get('id', None)

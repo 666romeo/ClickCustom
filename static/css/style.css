@@ -1740,3 +1740,22 @@ input#id_image {
     filter: brightness(0.9);
     transition: all ease .30s;
 }
+
+.delete_background {
+    max-width: 300px;
+    width: 40%;
+    height: 28px;
+    text-align: center;
+    font-size: 13px;
+    border-radius: 10px;
+    transition-duration: 0.1s;
+    border: none;
+    background-color: #5D71DD;
+    color: white;
+
+}
+
+.delete_background:hover {
+    background-color: #a3b2ff;
+    color: white;
+}

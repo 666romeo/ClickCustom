@@ -19,8 +19,9 @@
                                 <span style="font-size: 16px; margin-bottom: 20px; padding-top: 5px;">Фотографии</span>
                                 <span class="photo_permission" style="margin-bottom: 25px;">Не более 10</span>
                                 <img class="photo_main_image" src="{% static 'svg/add_photo22.svg' %}" style="width: 300px; height: 300px; border: 1px solid #5D71DD; background-color: white;" alt="">
-                                <div class="form_container_upload_avatar" style="min-width: 300px;">
+                                <div class="form_container_upload_avatar" style="display: flex; flex-direction: column; min-width: 300px;">
                                     {{ form.images }}
+                                    <button type="button" class="delete_background" style="margin-top: 10px;">Удалить фон</button>
                                 </div>
                                 <div class="add_product_add_images" id="preview-container"></div>
                             </div>
@@ -61,7 +62,44 @@
     </script>
     <script>
         let files = []; // Глобальная переменная для хранения выбранных файлов
+        $('.delete_background').on('click', function() {
 
+
+            let formData = new FormData();
+            let imageUrlForDeleteBackground = $('.photo_main_image').attr('src');
+            fetch(imageUrlForDeleteBackground)
+              .then(response => response.blob())
+              .then(blob => {
+                  let file = new File([blob], 'image.png', {type: 'image/png'});
+                  formData.delete('image');
+                  formData.append('image', file);
+                  let xhr = new XMLHttpRequest();
+                  xhr.open('POST', '/remove_background/', true);
+                  // Получение и добавление CSRF-токена в заголовок запроса
+                  let csrftoken = getCookie('csrftoken');
+                  xhr.setRequestHeader('X-CSRFToken', csrftoken);
+
+                  xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                       if (xhr.status === 200) {
+                           let response = JSON.parse(xhr.responseText);
+                           if (response.encoded_image) {
+                               // Обновление источника изображения главного фото
+                               $('.photo_main_image').attr('src', 'data:image/png;base64,' + response.encoded_image);
+                               $('[data-active] img').attr('src', 'data:image/png;base64,' + response.encoded_image);
+                           } else {
+                               // Обработка ошибки
+                               console.log('Ошибка удаления фона');
+                           }
+                       } else {
+                           // Обработка ошибки
+                           console.log('Ошибка удаления фона');
+                       }
+                    }
+                  };
+                  xhr.send(formData);
+              });
+        });
         $('input[type="file"]').on('change', function() {
           let newFiles = Array.from($(this)[0].files); // Новые догружаемые файлы
           let previewContainer = $('.slides');
@@ -74,6 +112,7 @@
           previewContainer.off('click', '.slide img');
           slider_container.off('click', '.carousel_button_previous');
           slider_container.off('click', '.carousel_button_next');
+
 
 
           if (files.length + newFiles.length > 10) {
@@ -122,7 +161,6 @@
 
                 // Удаление файла из списка файлов
                 files.splice(index, 1);
-                console.log(files);
 
                 // Проверка, является ли удаленное изображение главной фотографией
                 if (index === currentIndex) {
@@ -216,8 +254,9 @@
           });
 
           // Обновить главное фото при загрузке страницы
-          updateMainPhoto();
           console.log(files);
+
+          updateMainPhoto();
           if (files.length !== 0) {
               $('.add_product_content_body_left').css('display', 'block');
               $('.carousel').css('margin-right', '-130px');

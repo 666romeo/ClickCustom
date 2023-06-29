@@ -1,6 +1,6 @@
 from django.urls import path
 
-from products.views import IndexListView, addProductToFavorite, CreateProductView, removeProductFromFavorite, DetailProductView, AboutView, ConfidentView, OfertaView, UserFavoritesView
+from products.views import IndexListView, addProductToFavorite, CreateProductView, removeProductFromFavorite, remove_background_view, DetailProductView, AboutView, ConfidentView, OfertaView, UserFavoritesView
 
 app_name = 'product'
 
@@ -8,6 +8,7 @@ urlpatterns = [
     path('', IndexListView.as_view(), name='index'),
     path('product/<int:pk>/', DetailProductView.as_view(), name='product'),
     path('favorites/', UserFavoritesView.as_view(), name='favorites'),
+    path('remove_background/', remove_background_view, name='remove_background'),
     path('product/create/', CreateProductView.as_view(), name='createproduct'),
     path('about/', AboutView.as_view(), name='about'),
     path('confident/', ConfidentView.as_view(), name='confident'),
