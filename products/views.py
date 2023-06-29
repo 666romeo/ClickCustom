@@ -27,12 +27,24 @@ class IndexListView(TitleMixin, ListView):
 
     def get_queryset(self):
         queryset = super(IndexListView, self).get_queryset()
-        category_id = self.kwargs.get('category_id')
-        return queryset.filter(category_id=category_id) if category_id else queryset
+        category_name = self.kwargs.get('category_name')
+        if category_name:
+            category = ProductCategory.objects.get(name=category_name)
+            queryset = queryset.filter(category=category)
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
+        if min_price and max_price:
+            queryset = queryset.filter(price__gte=min_price, price__lte=max_price)
+        return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        categoryEnToRu = {'clothes': 'Одежда',
+                          'shoes': 'Обувь',
+                          'accessories': 'Аксессуары',
+                          'other': 'Другое'}
         context['categories'] = ProductCategory.objects.all()
+        context['category_name'] = categoryEnToRu.get(str(self.kwargs.get('category_name')))
         if str(self.request.user.id) != 'None':
             context['favorite_product_ids'] = UserProductsFavorite.objects.filter(user=self.request.user).values_list(
                 'product_id', flat=True)
@@ -60,7 +72,6 @@ class DetailProductView(TitleMixin, ListView):
         product = Product.objects.filter(id=product_id)
         images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
         author = ProductAuthor.objects.get(product=Product.objects.get(id=product_id))
-        print(author.author.username)
         context['product'] = product
         context['images'] = images
         context['author'] = author.author

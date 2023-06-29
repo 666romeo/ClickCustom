@@ -6,25 +6,30 @@
 {% endblock %}
 
 {% block content %}
-                <img src="{% static 'slider.png' %}" alt="" style="width: 95%; max-height: 400px; margin-bottom: 30px; border-radius: 12px;">
+                <img src="{% static 'slider.png' %}" alt="" style="width: 1340px; max-height: 400px; margin-bottom: 30px; border-radius: 12px;">
                 <div class="filter">
                     <div class="category_filter">
                         <img class="filter_logotype" src="{% static 'svg/category.svg' %}" alt="">
                         <div class="form-group">
                             <div class="dropdown">
-                                <button class="dropdown__button">Категория</button>
+                                {% if category_name != None %}
+                                    <button class="dropdown__button">{{ category_name }}</button>
+                                {% else %}
+                                    <button class="dropdown__button">Категория</button>
+                                {% endif %}
+
                                 <ul class="dropdown__list">
-                                    <li class="dropdown__list-item" data-value="clothes">Одежда</li>
-                                    <li class="dropdown__list-item" data-value="shoes">Обувь</li>
-                                    <li class="dropdown__list-item" data-value="accessories">Аксессуары</li>
-                                    <li class="dropdown__list-item" data-value="other">Другое</li>
+                                    <li class="dropdown__list-item" data-value="clothes"><a href="{% url 'product:index_category' category_name='clothes' %}">Одежда</a></li>
+                                    <li class="dropdown__list-item" data-value="shoes"><a href="{% url 'product:index_category' category_name='shoes' %}">Обувь</a></li>
+                                    <li class="dropdown__list-item" data-value="accessories"><a href="{% url 'product:index_category' category_name='accessories' %}">Аксессуары</a></li>
+                                    <li class="dropdown__list-item" data-value="other"><a href="{% url 'product:index_category' category_name='other' %}">Другое</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <button class="category_filter_button" type="submit"><img class="filter_logotype" src="{% static 'svg/arrow_down.svg' %}" alt=""><span>Сначала дешевые</span></button>
-                    <button class="category_filter_button" type="submit"><img class="filter_logotype" src="{% static 'svg/arrow_up.svg' %}" alt=""><span>Сначала дорогие</span></button>
+                    <button id="cheapestFirst" class="category_filter_button" type="button"><img class="filter_logotype" src="{% static 'svg/arrow_down.svg' %}" alt=""><span>Сначала дешевые</span></button>
+                    <button id="darlingsFirst" class="category_filter_button" type="button"><img class="filter_logotype" src="{% static 'svg/arrow_up.svg' %}" alt=""><span>Сначала дорогие</span></button>
 
                     <div class="main_price_filter">
                         <div class="price_filter"><img class="filter_logotype" src="{% static 'svg/rouble.svg' %}" alt="">Цена</div>
@@ -34,18 +39,19 @@
                             <div class="filter_price_inputs">
                                 <label class="filter_slider">
                                     <span class="filter_price_text">от</span>
-                                    <input type="number" id="input-0" min="0" placeholder="500" max="100000" class="filter_input">
+                                    <input type="number" id="input-0" placeholder="{{ request.GET.min_price }}" class="filter_input">
                                     <span class="filter_price_text">₽</span>
                                 </label>
                                 <label class="filter_slider">
                                     <span class="filter_price_text">до</span>
-                                    <input type="number" id="input-1" min="0" placeholder="999999" max="100000" class="filter_input">
+                                    <input type="number" id="input-1" placeholder="{{ request.GET.max_price }}" class="filter_input">
                                     <span class="filter_price_text">₽</span>
                                 </label>
                             </div>
 
                         </div>
-                        <button class="price_filter_button" type="submit">Применить</button>
+                        <a class="price_filter_button" href="{% url 'product:index' %}?min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}">Применить</a>
+
                     </div>
 
                 </div>
@@ -86,10 +92,8 @@
                 $favoriteImage.click(function() {
                     let isFavorite = $favoriteImage.hasClass('product_favorite_active');
                     if (isFavorite) {
-                        console.log('Удаляем');
                         removeProductFromFavorite(productId);
                     } else {
-                        console.log('Добавляем');
                         addProductToFavorite(productId);
                     }
                 });
@@ -104,13 +108,6 @@
                 data: {
                     id: productId,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                },
-                success: function(response) {
-                    if (response.id_exist) {
-                        console.log('Продукт добавлен в избранное');
-                    } else {
-                        console.log('Не удалось добавить продукт в избранное');
-                    }
                 }
             });
         }
@@ -123,17 +120,84 @@
                 data: {
                     id: productId,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
-                },
-                success: function(response) {
-                    if (response.id_exist) {
-                        console.log('Продукт удален из избранного');
-                    } else {
-                        console.log('Не удалось удалить продукт из избранного');
-                    }
                 }
             });
         }
 
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let cheapestFirst = document.getElementById('cheapestFirst');
+            let darlingsFirst = document.getElementById('darlingsFirst');
+            cheapestFirst.addEventListener('click', function() {
+                let products = document.querySelectorAll('.product');
+                let sortedProducts = Array.from(products).sort(function(a, b) {
+                    let priceA = parseInt(a.querySelector('.product_price').textContent);
+                    let priceB = parseInt(b.querySelector('.product_price').textContent);
+                    return priceA - priceB;
+                });
+                let indexList = document.querySelector('.index_list');
+                sortedProducts.forEach(function(product) {
+                    indexList.appendChild(product);
+                });
+            });
+            darlingsFirst.addEventListener('click', function() {
+                let products = document.querySelectorAll('.product');
+                let sortedProducts = Array.from(products).sort(function(a, b) {
+                    let priceA = parseInt(a.querySelector('.product_price').textContent);
+                    let priceB = parseInt(b.querySelector('.product_price').textContent);
+                    return priceB - priceA;
+                });
+                let indexList = document.querySelector('.index_list');
+                sortedProducts.forEach(function(product) {
+                    indexList.appendChild(product);
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('.price_filter_button').click(function(e) {
+                e.preventDefault();
+                let minPrice = $('#input-0').val();
+                let maxPrice = $('#input-1').val();
+                let currentUrl = window.location.href;
+                let baseUrl = currentUrl.split('?')[0];
+
+                let url = baseUrl + "?";
+                if (minPrice) {
+                    url += "min_price=" + minPrice + "&";
+                }
+                if (maxPrice) {
+                    url += "max_price=" + maxPrice + "&";
+                }
+                window.location.href = url;
+            });
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.dropdown__list-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                let link = this.querySelector('a');
+                if (link) {
+                  link.click();
+                }
+            });
+        });
+    </script>
+    <script>
+        let currentUrl = window.location.href;
+    </script>
     <script src="{% static 'js/nouislider.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let url = new URL(window.location.href);
+            let searchParams = new URLSearchParams(url.search);
+            let minPrice = searchParams.get('min_price');
+            let maxPrice = searchParams.get('max_price');
+            let slider = document.getElementById('range-slider');
+            slider.noUiSlider.set([minPrice, maxPrice]);
+        });
+    </script>
 {% endblock %}

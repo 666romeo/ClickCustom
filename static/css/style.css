@@ -735,7 +735,7 @@ footer p {
 }
 
 .price_filter_button {
-
+    text-decoration: none;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -745,7 +745,7 @@ footer p {
     margin: 0 20px;
     font-size: 18px;
     margin-right: 0;
-
+    padding: 0 10px;
     border-radius: 5px;
     transition-duration: 0.1s;
     border: none;
@@ -890,25 +890,18 @@ input::-webkit-inner-spin-button {
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-
     width: 123px;
     position: relative;
     display: block;
-
     text-align: left;
     background: #f5f5f5;
     border: none;
     border-radius: 6px;
-
     padding-top: 13px;
     padding-bottom: 13px;
-
-
-
     font-size: 18px;
     line-height: 20px;
     cursor: pointer;
-
 }
 
 .dropdown__button:hover {
@@ -924,9 +917,7 @@ input::-webkit-inner-spin-button {
     box-shadow: 0 4px 8px rgba(176, 198, 225, 0.6);
     overflow: hidden;
     border-radius: 6px;
-
     z-index: 1;
-
 }
 
 .dropdown__list--visible {
@@ -944,6 +935,11 @@ input::-webkit-inner-spin-button {
     cursor: pointer;
 }
 
+.dropdown__list-item a {
+    color: black;
+    cursor: pointer;
+    text-decoration: none;
+}
 
 .dropdown__list-item:first-child {
     border-radius: 6px 6px 0 0;
@@ -1073,6 +1069,8 @@ input::-webkit-inner-spin-button {
     width: 95%;
     padding-left: 15px;
     padding-right: 15px;
+    text-align: center;
+    line-height: 2;
 }
 
 .product_description span {
