@@ -1,0 +1,167 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block css %}
+    <style type="text/css">
+        .product_edit_buttons {
+            display: flex;
+            justify-content: center;
+        }
+        .product_edit_buttons button {
+            font-size: 20px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            padding: 10px 35px;
+            transition-duration: 0.3s;
+        }
+        .product_edit_save_changes {
+            background-color: #5D71DD;
+        }
+        .product_edit_delete {
+            margin-right: 20px;
+            background-color: #ff464b;
+        }
+        .product_edit_buttons button:hover {
+            box-shadow: 0 0 5px black;
+            filter: brightness(0.7);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+                <div class="product_content_start">
+                    <div class="product_detail_photos">
+                        <div class="carousel">
+                            <button class="carousel_button_previous"><img src="{% static 'svg/arrow_up.svg' %}" alt=""></button>
+                            <ul class="slides" style="height: 530px; display: block;">
+                            {% for image in images %}
+                                <li class="slide">
+                                    <img src="{{ image.image.url }}" alt="">
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            <button class="carousel_button_next"><img src="{% static 'svg/arrow_down.svg' %}" alt=""></button>
+                        </div>
+
+{% for item in product %}
+                    </div>
+                    <div class="detail_main_photo_article">
+                        <div class="detail_main_photo_close"><img class="detail_main_photo_close_on" src="{% static 'svg/close.svg' %}" alt=""></div>
+                        <div class="detail_product_loupe">
+                            <img class="loupe_photo" src="{% static 'svg/loupe_name_photo.svg' %}" alt="">
+                        </div>
+                        <img class="detail_product_main_photo" src="{{ item.image.url }}" alt="">
+                    </div>
+
+
+
+                    <div class="product_information">
+                        <div class="detail_product">
+                            <span class="detail_product_name">{{ item.name }}</span>
+                            <span class="detail_product_price">Цена: {{ item.price }} ₽</span>
+                        </div>
+                        <div class="product_edit_buttons">
+                            <form method="post" action="{% url 'product:product_edit' item.id %}">
+                                {% csrf_token %}
+                                <button class="product_edit_delete">Удалить товар</button>
+                            </form>
+                                <button class="product_edit_save_changes">Сохранить изменения</button>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="product_description">
+                    <span>{{ item.description }}</span>
+                </div>
+{% endfor %}
+{% endblock %}
+{% block script %}
+    <script>
+        contact_with_brand
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('img.product_favorite').each(function(i) {
+                $(this).click(function() {
+                    $('#' + (i+1)).toggleClass('product_favorite_active');
+                });
+            });
+        });
+    </script>
+    <script>
+        let slides = $('.slide img');
+        let prevButton = $('.carousel_button_previous');
+        let nextButton = $('.carousel_button_next');
+
+        console.log(slides.length);
+        // Проверяем количество изображений
+        if (slides.length < 5) {
+            prevButton.hide();
+            nextButton.hide();
+        }
+        let slider_container = $('.carousel');
+        slider_container.on('click', '.carousel_button_previous', function() {
+            handleImageChange(-1);
+        });
+        slider_container.on('click', '.carousel_button_next', function() {
+            handleImageChange(1);
+        });
+        slider_container.on('click', '.slide img', function() {
+            // Удаление класса data-active у предыдущего активного изображения
+            $('.slide[data-active]').removeAttr('data-active');
+
+            // Добавление класса data-active к выбранному изображению
+            $(this).closest('.slide').attr('data-active', true);
+
+            let clickedImageSrc = $(this).attr('src');
+            $('.detail_product_main_photo').attr('src', clickedImageSrc);
+        });
+        let handleImageChange = (offset) =>{
+            let activeSlide = document.querySelector('[data-active]')
+            let slides = [...document.querySelectorAll('.slide')]
+            let currentIndex = slides.indexOf(activeSlide)
+            let newIndex = currentIndex + offset;
+            if(newIndex < 0) newIndex = slides.length - 1
+            if(newIndex >= slides.length) newIndex = 0
+            slides[newIndex].scrollIntoView({block: "end", behavior: "smooth"});
+            slides[newIndex].dataset.active = true;
+            delete activeSlide.dataset.active;
+            let nextImageSrc = slides[newIndex].querySelector('img').getAttribute('src');
+            $('.detail_product_main_photo').attr('src', nextImageSrc);
+        }
+        let onNext = ()=> handleImageChange(1)
+        let onPrev = ()=> handleImageChange(-1)
+    </script>
+    <script>
+        const loupe = document.querySelector('.loupe_photo')
+        let activePhoto = document.querySelector('.detail_product_main_photo')
+
+        loupe.addEventListener('click', function () {
+            document.querySelector('html').style.background = "white"
+            document.querySelector('.product_detail_photos').style.display = "none"
+            document.querySelector('.main_head').style.display = "none"
+            document.querySelector('.product_information').style.display = "none"
+            document.querySelector('.product_description').style.display = "none"
+            document.querySelector('.loupe_photo').style.display = "none"
+            document.querySelector('footer').style.display = "none"
+            document.querySelector('header').style.display = "none"
+            document.querySelector('.detail_main_photo_close').classList.toggle('detail_main_photo_close--active')
+            activePhoto.classList.add('main_photo_loupe')
+        });
+
+        document.querySelector('.detail_main_photo_close').addEventListener('click', function () {
+            document.querySelector('.detail_main_photo_close').classList.remove('detail_main_photo_close--active')
+            document.querySelector('html').style.background = "var(--bg-color)"
+            document.querySelector('.product_detail_photos').style.display = "inline"
+            document.querySelector('.main_head').style.display = "flex"
+            document.querySelector('.product_information').style.display = "flex"
+            document.querySelector('.product_description').style.display = "inline"
+            document.querySelector('.loupe_photo').style.display = "inline"
+            document.querySelector('footer').style.display = "flex"
+            document.querySelector('header').style.display = "flex"
+            activePhoto.classList.remove('main_photo_loupe')
+        });
+    </script>
+{% endblock %}

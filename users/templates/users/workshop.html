@@ -1,0 +1,67 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block css_main %}
+    <style type="text/css">
+        .content {
+            margin-top: 70px;
+            margin-bottom: 0;
+        }
+        .main_body {
+            max-width: 1420px;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .product {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            max-width: 300px;
+            margin-left: 25px;
+            margin-right: 25px;
+            margin-bottom: 35px;
+            transition: all ease .35s;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .product:hover {
+            filter: brightness(1) saturate(0);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .workshop_body_content_head span {
+            font-size: 25px;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="workshop_head">
+        <a class="menu_element_mini" href="{% url 'users:workshop' %}"><img src="{% static 'svg/manuscript.svg' %}" alt="">Мои товары</a>
+        <a class="menu_element_mini" href="{% url 'users:workshop' %}"><img src="{% static 'svg/manuscript.svg' %}" alt="">Продвижение</a>
+        <a class="menu_element_mini" href="{% url 'users:workshop' %}"><img src="{% static 'svg/manuscript.svg' %}" alt="">Статистика</a>
+    </div>
+    <div class="workshop_body">
+        <div class="workshop_body_content">
+            <div class="workshop_body_content_head">
+                <span>Ваши товары:</span>
+                <a class="button" href="{% url 'product:createproduct' %}">Добавить товар</a>
+            </div>
+            <div class="workshop_body_content_body">
+            {% if object_list|length >= 1  %}
+                {% for product in object_list %}
+                <div class="product">
+                    <div class="product_href">
+                        <a class="product_info" href="{% url 'products:product_edit' product.product.id %}">
+                            <img class="product_image" src="{{ product.product.image.url }}" alt="">
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div style="margin: 100px;">Вы еще не добавили ни одного товара...</div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

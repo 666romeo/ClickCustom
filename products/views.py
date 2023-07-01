@@ -51,6 +51,42 @@ class IndexListView(TitleMixin, ListView):
         return context
 
 
+class EditProductView(TitleMixin, ListView):
+    model = Product
+    template_name = 'products/edit_product.html'
+    title = 'ClickCustom - Редактор товара'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_id = self.kwargs['pk']
+        recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
+        max_items = 5
+
+        if recent_items.count() >= max_items:
+            oldest_timestamp = recent_items[max_items - 1].timestamp
+            recent_items.exclude(timestamp__gte=oldest_timestamp).delete()
+        if product_id in recent_items.values_list('product_id', flat=True):
+            recent_items.filter(product_id=product_id).delete()
+        RecentlyViewed.objects.create(user=self.request.user, product=get_object_or_404(Product, pk=product_id))
+
+        product = Product.objects.filter(id=product_id)
+        images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
+        author = ProductAuthor.objects.get(product=Product.objects.get(id=product_id))
+        context['product'] = product
+        context['images'] = images
+        context['author'] = author.author
+        return context
+
+    def post(self, request, *args, **kwargs):
+        product_id = self.kwargs['pk']
+        product = get_object_or_404(Product, pk=product_id)
+        product = ProductAuthor.objects.filter(product=product)
+        if product[0].author != request.user:
+            return redirect('product:index')
+        product.delete()
+        return redirect('users:workshop')
+
+
 class DetailProductView(TitleMixin, ListView):
     model = Product
     template_name = 'products/product.html'
@@ -96,7 +132,10 @@ class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
     form_class = ProductImagesForm
     template_name = 'products/workshop.html'
     title = 'ClickCustom - Workshop'
-
+    categoryEnToRu = {'clothes': 'Одежда',
+                      'shoes': 'Обувь',
+                      'accessories': 'Аксессуары',
+                      'other': 'Другое'}
     def get(self, request, *args, **kwargs):
         user = request.user
         form = self.form_class()
@@ -109,9 +148,9 @@ class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         user = request.user
         form = self.form_class(request.POST, request.FILES)
-
         # Создаем новый товар
-        category_name = request.POST.get('category')
+        desired_value = request.POST.get('category')
+        category_name = next(key for key, value in self.categoryEnToRu.items() if value == desired_value)
         category = get_object_or_404(ProductCategory, name=category_name)
         name = request.POST.get('name')
         price = int(request.POST.get('price'))
@@ -125,7 +164,6 @@ class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
             description=description,
             image=image,
         )
-
         # Создаем объекты ProductImages для каждой загруженной фотографии
         images = request.FILES.getlist('images')
         for img in images:

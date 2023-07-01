@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponse
 from common.views import TitleMixin
 from users.forms import UserProfileForm
-from users.models import User, RecentlyViewed, UserProductsFavorite
+from users.models import User, RecentlyViewed, UserProductsFavorite, ProductAuthor
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
@@ -20,7 +20,7 @@ import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from products.forms import ProductImagesForm
-
+from products.models import Product, ProductCategory, ProductImages
 
 class UserProfileEdit(TitleMixin, LoginRequiredMixin, View):
     model = User
@@ -124,6 +124,25 @@ class UserProfileView(TitleMixin, LoginRequiredMixin, View):
             os.remove(image_path)
             user.image = None
             user.save()
+
+
+
+class WorkshopView(TitleMixin, ListView):
+    model = Product
+    template_name = 'users/workshop.html'
+    title = 'ClickCustom - Мастерская'
+
+    def get_queryset(self):
+        queryset = super(WorkshopView, self).get_queryset()
+        for i in queryset:
+            print(ProductAuthor.objects.filter(product=i.name))
+        user = self.request.user
+        queryset = ProductAuthor.objects.filter(author=user)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 def logout(request):
