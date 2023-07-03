@@ -1,0 +1,313 @@
+[
+{
+    "model": "products.productcategory",
+    "pk": 1,
+    "fields": {
+        "name": "shoes",
+        "description": ""
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 2,
+    "fields": {
+        "name": "clothes",
+        "description": ""
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 3,
+    "fields": {
+        "name": "other",
+        "description": ""
+    }
+},
+{
+    "model": "products.productcategory",
+    "pk": 4,
+    "fields": {
+        "name": "accessories",
+        "description": ""
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$260000$XtDQeUhxjHvI62R8uSZXmT$X9Bw2jv7xASuhz0AOl3JtR3srSuneZctMZ4IuMQ/Ypw=",
+        "last_login": "2023-07-02T20:34:30.921Z",
+        "is_superuser": true,
+        "username": "vokler",
+        "first_name": "",
+        "last_name": "",
+        "email": "brovtsinegor@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2023-07-02T20:05:31.413Z",
+        "image": "users_images/123_oIb0tn9.png",
+        "description": null,
+        "town": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$260000$5oCcRRldUbhdjsABQmv88L$qvaco4YKU1apTDdsV97fwktk5x1+z27PIl5zrEZCotA=",
+        "last_login": "2023-07-02T20:32:51.929Z",
+        "is_superuser": false,
+        "username": "alposomn",
+        "first_name": "",
+        "last_name": "",
+        "email": "ferkosshow1999@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2023-07-02T20:32:51.686Z",
+        "image": "users_images/1111.jpg",
+        "description": null,
+        "town": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+        "name": "Голубая рубашка в клетку",
+        "description": "Голубая рубашка в клетку (upcycling) с розовыми треугольными вставками и лентами в цвет. Ленты формируются в банты самостоятельно по желанию.\r\n\r\nРазмер: XS-L (ОБ-140, ОТ-130, ОГ-126, ДП-20, ДР-48)",
+        "price": "3000.00",
+        "image": "products_images/image_XiRTJCt.jpg",
+        "category": 2
+    }
+},
+{
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+        "name": "Двусторонняя синтепоновая куртка ",
+        "description": "Двусторонняя синтепоновая куртка для тусовок с садовыми гномами.\r\nКуртка имеет прямой крой, с одной стороны выполнена вышивка и аппликация, с другой яркий материал в ромбики. Застегивается на серебряные кнопки. Капюшон имеет форму конуса и кисточку на конце. Утеплитель рассчитан на температуру до -5 градусов. С каждой из сторон имеются карманы на уровне согнутых в локтях рук.",
+        "price": "13000.00",
+        "image": "products_images/image_nOTVARm.jpg",
+        "category": 2
+    }
+},
+{
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+        "name": "Рубашка в клетку с бантом-змеёй",
+        "description": "Рубашка в клетку с бантом-змеёй\r\nРубашка с расклешенным к низу фасоном, пышными рукавами и бантом-змеёй набитым синтепоном ( в части воротника вокруг шеи синтепон отсутствует). Сшита из отреза винтажного немецкого хлопка. Манжеты и воротник стойка продублированы. Застегивается на шесть шаровидных пуговиц, они же присутствуют и на манжетах.\r\n🥀🐍🥀\r\nРазмеры: S-L(ОГ-128, ОТ-142, ОБ -160, ДП-21(спущенный рукав), ДР - 60, Длина Изделия - 63)\r\nПараметры модели: рост 167, ОБ-93, ОТ-67, ОГ-89",
+        "price": "6500.00",
+        "image": "products_images/image_tblHwyZ.jpg",
+        "category": 2
+    }
+},
+{
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+        "name": "Хлопковое белое платье с крыльями",
+        "description": "Хлопковое белое платье с крыльями.\r\nБелок хлопковое платье выше колена с подкладом. Воротник стойка, три пары лент-завязок. На спине располагается декоративный элемент - крылья.\r\n🕊️🦢🕊️\r\nРазмеры: S-L (ОГ - 120, ОТ - 140, ОБ -150, ДП-22 (спущенный рукав), ДР - 53, Длина Изделия - 88)\r\nПараметры модели: рост 167, ОБ-93, ОТ-67, ОГ-89",
+        "price": "9000.00",
+        "image": "products_images/image_hhzgzKP.jpg",
+        "category": 2
+    }
+},
+{
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+        "name": "Хлопковое платье с немецким принтом и розовыми лентами",
+        "description": "Хлопковое платье с немецким принтом и розовыми лентами.\r\nХлопковое платье длины между макси и миди. Рукава фонарики чуть ниже локтя. Плечо спущено. Воротник стойка. На рукавах и передней части располагаются ленты завязывающиеся в банты. В боковых швах юбки располагаются карманы. Пояс объемный - заполнен синтепоном. Продевается в шлицы. Использованный материал: немецкий винтажный хлопок, розовый синтетический материал с сатиновым блеском.\r\n☀️🐞🐸\r\nРазмеры: S-L (ОГ/ОТ-120, ДП- 12 (спущенный рукав), ДР-\r\n38, Длина издели -112)\r\nПараметры модели: рост -167, ОБ-93, ОТ-67, ОГ-89",
+        "price": "9000.00",
+        "image": "products_images/image_WWL8hfw.jpg",
+        "category": 2
+    }
+},
+{
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+        "name": "Шерстяной салатовый жилет с помпонами",
+        "description": "Шерстяной жилет с помпонами выполнен из шерстяного детского одеяла средней плотности. Украшен тремя акриловыми помпонами ручной работы. Горловина и проймы под руки обработаны вручную пряжей в цвет помпонов. На спинке располагается бирка. Внутренние швы жилетки закрыты киперной лентой, поэтому колоться и чесаться не будут\r\n\r\nРазмеры: S-L (ОГ/ОТ/ОБ -122, ДП-21(спущенный рукав), Длина Изделия - 68)\r\nПараметры модели: рост 167, ОБ-93, ОТ-67, ОГ-89",
+        "price": "5500.00",
+        "image": "products_images/image_gfSAeYM.jpg",
+        "category": 2
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "image": "product_images/111.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "image": "product_images/1111.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 3,
+    "fields": {
+        "product": 1,
+        "image": "product_images/11111.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 4,
+    "fields": {
+        "product": 2,
+        "image": "product_images/7rYAO0KcEkM.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 5,
+    "fields": {
+        "product": 2,
+        "image": "product_images/8Prleg7_2aI.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 6,
+    "fields": {
+        "product": 2,
+        "image": "product_images/RbjnhagJYCU.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 7,
+    "fields": {
+        "product": 3,
+        "image": "product_images/6n-pzU3iud0_Q96NWD7.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 8,
+    "fields": {
+        "product": 3,
+        "image": "product_images/EA82Ivjp8QE.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 9,
+    "fields": {
+        "product": 4,
+        "image": "product_images/9K_7lCpKRaM.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 10,
+    "fields": {
+        "product": 4,
+        "image": "product_images/JkFr99XAEiE_0AOweJ7.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 11,
+    "fields": {
+        "product": 4,
+        "image": "product_images/WQbqyIyAV24.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 12,
+    "fields": {
+        "product": 5,
+        "image": "product_images/h-sS0kp7v40_3gOIV2B.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 13,
+    "fields": {
+        "product": 5,
+        "image": "product_images/KZbrA6VBbFU_EoPygxQ.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 14,
+    "fields": {
+        "product": 6,
+        "image": "product_images/8Bv3lsaELuQ_2z87Sp3.jpg"
+    }
+},
+{
+    "model": "products.productimages",
+    "pk": 15,
+    "fields": {
+        "product": 6,
+        "image": "product_images/XYx3l0-dBEs_ZHWcAq8.jpg"
+    }
+},
+{
+    "model": "users.productauthor",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "author": 1
+    }
+},
+{
+    "model": "users.productauthor",
+    "pk": 2,
+    "fields": {
+        "product": 2,
+        "author": 1
+    }
+},
+{
+    "model": "users.productauthor",
+    "pk": 3,
+    "fields": {
+        "product": 3,
+        "author": 1
+    }
+},
+{
+    "model": "users.productauthor",
+    "pk": 4,
+    "fields": {
+        "product": 4,
+        "author": 1
+    }
+},
+{
+    "model": "users.productauthor",
+    "pk": 5,
+    "fields": {
+        "product": 5,
+        "author": 2
+    }
+},
+{
+    "model": "users.productauthor",
+    "pk": 6,
+    "fields": {
+        "product": 6,
+        "author": 2
+    }
+}
+]
+
+
+
