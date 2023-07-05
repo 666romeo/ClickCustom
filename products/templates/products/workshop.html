@@ -320,6 +320,21 @@
         }
         return cookieValue;
       }
+      function transliterateFileName(fileName) {
+          let translitTable = {
+            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+            'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'E', 'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Shch', 'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
+          };
+
+          let translitFileName = '';
+
+          for (let i = 0; i < fileName.length; i++) {
+            let char = fileName.charAt(i);
+            translitFileName += translitTable[char] || char;
+          }
+
+          return translitFileName;
+        }
       $(document).ready(function() {
         $('.upload_avatar').click(function(e) {
           e.preventDefault(); // Отменяем стандартное поведение кнопки
@@ -330,22 +345,19 @@
           form_data.append('price', $('input[name="price"]').val());
           form_data.append('category', $('input[name="category"]').val());
           form_data.append('description', $('textarea[name="description"]').val());
-
+          let indexMainImage = $('.slides .slide[data-active]').index();
+          let fileName = files[indexMainImage].name;
+          let translitFileName = transliterateFileName(fileName);
+          form_data.append('image', files[indexMainImage], translitFileName);
           // Добавляем каждое изображение в FormData
           for (let i = 0; i < files.length; i++) {
-              form_data.append('images', files[i]);
-          }
+              let fileName = files[i].name;
+              let translitFileName = transliterateFileName(fileName);
+              form_data.append('images', files[i], translitFileName);
+            }
 
 
           let csrftoken = getCookie('csrftoken');
-          let imageUrl = $('.photo_main_image').attr('src');
-            fetch(imageUrl)
-              .then(response => response.blob())
-              .then(blob => {
-                let file = new File([blob], 'image.jpg', { type: 'image/jpeg' });
-                form_data.delete('image');
-                form_data.append('image', file);
-
                 // Отправка POST-запроса на сервер
                 $.ajax({
                   url: '/product/create/',
@@ -370,7 +382,7 @@
               .catch(error => {
                 console.log('Ошибка при получении файла изображения:', error);
               });
-        });
+
       });
     </script>
 {% endblock %}

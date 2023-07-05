@@ -1,7 +1,8 @@
 from django.urls import path
 
-from products.views import IndexListView, addProductToFavorite, CreateProductView, removeProductFromFavorite, \
-    remove_background_view, DetailProductView, AboutView, ConfidentView, OfertaView, UserFavoritesView, EditProductView
+from products.views import IndexListView, addProductToFavorite, delete_product, CreateProductView, \
+    removeProductFromFavorite,remove_background_view, DetailProductView, AboutView, ConfidentView, OfertaView, \
+    UserFavoritesView, EditProductView, delete_image, add_images_to_product, assign_main_photo, delete_images
 
 app_name = 'product'
 
@@ -16,7 +17,12 @@ urlpatterns = [
     path('about/', AboutView.as_view(), name='about'),
     path('confident/', ConfidentView.as_view(), name='confident'),
     path('oferta/', OfertaView.as_view(), name='oferta'),
+    path('delete_product/', delete_product, name='delete_product'),
+    path('add_images_to_product/<int:product_id>/', add_images_to_product, name='add_images_to_product'),
+    path('assign_main_photo/<int:product_id>/', assign_main_photo, name='assign_main_photo'),
     path('add_product_to_favorite/', addProductToFavorite, name='addProductToFavorite'),
+    path('delete_images/<int:product_id>/', delete_images, name='delete_images'),
+    path('delete_image/<int:product_id>/', delete_image, name='delete_image'),
     path('remove_product_from_favorite/', removeProductFromFavorite, name='removeProductFromFavorite'),
 ]
 

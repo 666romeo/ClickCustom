@@ -65,3 +65,14 @@
         </div>
     </div>
 {% endblock %}
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            $('.product_image').each(function () {
+                let encodedUrl = $(this).attr('src');
+                let decodedUrl = decodeURIComponent(encodedUrl);
+                $(this).attr('src', decodedUrl);
+            });
+        });
+    </script>
+{% endblock %}

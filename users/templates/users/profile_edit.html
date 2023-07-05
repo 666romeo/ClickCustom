@@ -7,36 +7,29 @@
 
 {% block content %}
                 <div class="profile_content">
-
-                    <div class="profile_img_block">
+                    <form method="post" action="{% url 'users:profile_edit' user.id %}" enctype="multipart/form-data" style="display: flex; width: 100%;">
+                        {% csrf_token %}
+                        <div class="profile_img_block">
                         {% if user.image %}
                             <img class="profile_img" src="{{ user.image.url }}" alt="">
                         {% else %}
                             <img class="profile_img" src="{% static 'svg/profile.svg' %}" alt="">
                         {% endif %}
-                        <form method="post" action="{% url 'users:profile_edit' user.id %}" enctype="multipart/form-data">
-                            {% csrf_token %}
                             <div class="form_container_upload_avatar">
                                 {{ form.image }}
                             </div>
-                            <div class="button_container_upload_avatar">
-                                <button class="upload_avatar" style="margin-top: 15px;">Загрузить изображение</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
 
-                    <div class="profile_information">
-                        <form method="post" action="{% url 'users:profile_edit' user.id %}">
-                            <div class="profile_input">Имя:<span style="margin-left: 61px;">{{ user.username }}</span></div>
-                            <div class="profile_input">Email:<span style="margin-left: 51px;">{{ user.email }}</span></div>
-                            <div class="profile_input">Регион:<input type="text" style="margin-left: 27px;" placeholder="{% if user.town %}{{ user.town }}{% endif %}"></div>
-                            <div class="profile_input">О продавце: <textarea class="edit_profile_description">{% if user.description %}{{ user.description }}{% endif %}</textarea></div>
-                            <div class="button_upload_avatar">
-                                <button class="upload_avatar" style="width: 150px;">Сохранить</button>
-                            </div>
-                        </form>
-                    </div>
-
+                        <div class="profile_information">
+                                <div class="profile_input">Имя:<span style="margin-left: 61px;">{{ user.username }}</span></div>
+                                <div class="profile_input">Email:<span style="margin-left: 51px;">{{ user.email }}</span></div>
+                                <div class="profile_input">Регион:<input type="text" name="town" style="margin-left: 27px;" placeholder="{% if user.town %}{{ user.town }}{% endif %}"></div>
+                                <div class="profile_input">О продавце: <textarea name="description" class="edit_profile_description">{% if user.description %}{{ user.description }}{% endif %}</textarea></div>
+                                <div class="button_upload_avatar">
+                                    <button type="submit" class="upload_avatar" style="width: 150px;">Сохранить</button>
+                                </div>
+                        </div>
+                    </form>
                     <div class="back_to_profile">
                         <a class="back_to_profile_a" href="{% url 'users:profile' user.id %}">
                             <img src="{% static 'svg/back.svg' %}" alt="">
@@ -44,4 +37,50 @@
                     </div>
                 </div>
                 <span class="border_line_profile"></span>
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            $(".form_container_upload_avatar input[type=file]").change(function() {
+                let input = $(this);
+                if (input && input[0].files && input[0].files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        $(".profile_img").attr("src", e.target.result);
+                    };
+                    reader.readAsDataURL(input[0].files[0]);
+                }
+            });
+            $(".upload_avatar").click(function(event) {
+                event.preventDefault(); // Предотвращаем обычное поведение кнопки submit
+
+                // Получаем данные формы
+                let form = $(this).closest("form");
+                let url = form.attr("action");
+                let formData = new FormData(form[0]);
+
+                // Отправляем POST-запрос на сервер
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        // Обработка успешного ответа от сервера
+                        if (response.success) {
+                            window.location.href = "/profile/" + response.user_id + "/";
+                        } else {
+                            console.log(response.errors);
+                            // Дополнительный код для обработки ошибок валидации формы
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Обработка ошибок
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

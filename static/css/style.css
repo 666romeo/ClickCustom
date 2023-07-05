@@ -1032,10 +1032,30 @@ input::-webkit-inner-spin-button {
     margin-bottom: 10px;
     font-size: 30px;
     font-weight: 900;
+    color: black;
 }
 
 .detail_product_price {
     font-size: 26px;
+}
+
+.detail_product_name_edit input, .detail_product_price_edit input, .detail_product_description_edit textarea {
+    margin: 10px 0;
+    font-size: 15px;
+    font-weight: 900;
+    color: black;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #5D71DD;
+    padding: 5px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.detail_product_description_edit textarea {
+    resize: none;
+    overflow: auto;
+    height: 400px;
 }
 
 .detail_product_logo_company {
@@ -1831,4 +1851,50 @@ input#id_image {
     background-color: #a3b2ff;
     color: white;
 }
+.product_edit_buttons {
+    display: flex;
+    justify-content: center;
+}
+.product_edit_buttons button {
+    font-size: 20px;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    padding: 10px 35px;
+    transition-duration: 0.3s;
+}
+.product_edit_save_changes {
+    background-color: #5D71DD;
+}
+.product_edit_delete {
+    margin-right: 20px;
+    background-color: #ff464b;
+}
+.product_edit_buttons button:hover {
+    box-shadow: 0 0 5px black;
+    filter: brightness(0.7);
+}
 
+#popupMessage {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+#popupMessage.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.detail_product_main_photo {
+    margin-bottom: 25px;
+}

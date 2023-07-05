@@ -192,6 +192,12 @@
     <script src="{% static 'js/nouislider.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            $('.product_image').each(function() {
+              let encodedUrl = $(this).attr('src');
+              let decodedUrl = decodeURIComponent(encodedUrl);
+              $(this).attr('src', decodedUrl);
+            });
+
             let url = new URL(window.location.href);
             let searchParams = new URLSearchParams(url.search);
             let minPrice = searchParams.get('min_price');

@@ -32,7 +32,7 @@ class UserProfileEdit(TitleMixin, LoginRequiredMixin, View):
         user_id = self.kwargs['pk']
         if request.user.id != user_id:
             # Если текущий пользователь не соответствует запрошенному профилю
-            return redirect('/profile/{}/edit'.format(request.user.id))
+            return redirect('/profile/edit/{}'.format(request.user.id))
 
         user = User.objects.get(id=user_id)
         form = self.form_class()
@@ -45,29 +45,34 @@ class UserProfileEdit(TitleMixin, LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user_id = self.kwargs['pk']
         if request.user.id != user_id:
-            # Если текущий пользователь не соответствует запрошенному профилю
-            # Вы можете вернуть ошибку 403 Forbidden или перенаправить на другую страницу
             return HttpResponseForbidden("Вы не имеете доступа к этому профилю.")
 
         user = User.objects.get(id=user_id)
         form = self.form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            # Удаление предыдущего изображения пользователя
             if user.image and 'image' in request.FILES:
                 self.delete_previous_image(user.image.path, user)
 
-            # Сохранение нового изображения пользователя
-            image = form.cleaned_data['image']
-            if image:
-                user.image = image
-                user.save()
+            user.image = form.files.get('image', user.image)
+            user.town = request.POST.get('town', user.town)
+            user.description = request.POST.get('description', user.description)
+            user.save()
 
-        context = {
-            'user': user,
-            'form': form,
-        }
-        return render(request, self.template_name, context)
+            data = {
+                'success': True,
+                'message': 'Информация успешно обновлена.',
+                'user_id': user.id,
+            }
+        else:
+            data = {
+                'success': False,
+                'errors': form.errors,
+            }
+
+        return JsonResponse(data)
+
+
 
     def delete_previous_image(self, image_path, user):
         if os.path.isfile(image_path):
@@ -107,7 +112,6 @@ class UserProfileView(TitleMixin, LoginRequiredMixin, View):
             if user.image and 'image' in request.FILES:
                 self.delete_previous_image(user.image.path, user)
 
-            # Сохранение нового изображения пользователя
             image = form.cleaned_data['image']
             if image:
                 user.image = image
@@ -133,9 +137,6 @@ class WorkshopView(TitleMixin, ListView):
     title = 'ClickCustom - Мастерская'
 
     def get_queryset(self):
-        queryset = super(WorkshopView, self).get_queryset()
-        for i in queryset:
-            print(ProductAuthor.objects.filter(product=i.name))
         user = self.request.user
         queryset = ProductAuthor.objects.filter(author=user)
         return queryset

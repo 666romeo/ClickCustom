@@ -18,7 +18,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from PIL import Image
 from utils.remove_background import remove_background
-
+from django.core.files.storage import default_storage
+from django.forms import modelformset_factory
+from django.http import HttpResponse
+import os
+import re
+from urllib.parse import unquote
 
 class IndexListView(TitleMixin, ListView):
     model = Product
@@ -53,14 +58,17 @@ class IndexListView(TitleMixin, ListView):
 
 class EditProductView(TitleMixin, ListView):
     model = Product
+    form_class = ProductImagesForm
     template_name = 'products/edit_product.html'
     title = 'ClickCustom - Редактор товара'
 
     def get_context_data(self, **kwargs):
+        form = self.form_class()
         context = super().get_context_data(**kwargs)
         product_id = self.kwargs['pk']
         recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
         max_items = 5
+
 
         if recent_items.count() >= max_items:
             oldest_timestamp = recent_items[max_items - 1].timestamp
@@ -75,17 +83,22 @@ class EditProductView(TitleMixin, ListView):
         context['product'] = product
         context['images'] = images
         context['author'] = author.author
+        context['product_id'] = product_id
+        context['form'] = form
         return context
 
     def post(self, request, *args, **kwargs):
         product_id = self.kwargs['pk']
         product = get_object_or_404(Product, pk=product_id)
-        product = ProductAuthor.objects.filter(product=product)
-        if product[0].author != request.user:
-            return redirect('product:index')
-        product.delete()
-        return redirect('users:workshop')
+        product.name = request.POST.get('name')
+        product.price = request.POST.get('price')
+        product.description = request.POST.get('description')
+        new_image = request.POST.get('main_image')
+        new_image = new_image.replace('/media/', '')
+        product.image = new_image
+        product.save()
 
+        return HttpResponse(status=200)
 
 class DetailProductView(TitleMixin, ListView):
     model = Product
@@ -107,6 +120,7 @@ class DetailProductView(TitleMixin, ListView):
 
         product = Product.objects.filter(id=product_id)
         images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
+        images = [unquote(image.image.url) for image in images]
         author = ProductAuthor.objects.get(product=Product.objects.get(id=product_id))
         context['product'] = product
         context['images'] = images
@@ -155,22 +169,32 @@ class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
         name = request.POST.get('name')
         price = int(request.POST.get('price'))
         description = request.POST.get('description')
-        image = request.FILES.get('image')
-        # Сохраняем товар в базе данных
+        image = request.FILES.getlist('image')
+        images = request.FILES.getlist('images')
+        main_image_name = image[0].name
+
         product = Product.objects.create(
             name=name,
             price=price,
             category=category,
             description=description,
-            image=image,
+            image=image[0],
         )
-        # Создаем объекты ProductImages для каждой загруженной фотографии
-        images = request.FILES.getlist('images')
+
+        # Создаем объекты ProductImages только для остальных файлов изображений
         for img in images:
+            # Пропускаем главное изображение
+            if img.name == main_image_name:
+                continue
+
             ProductImages.objects.create(
                 product=product,
                 image=img,
             )
+        ProductImages.objects.create(
+            product=product,
+            image=product.image.url.replace('media/', ''),
+        )
 
         ProductAuthor.objects.create(
             product=product,
@@ -180,6 +204,67 @@ class CreateProductView(TitleMixin, LoginRequiredMixin, CreateView):
         # Перенаправляем пользователя на страницу успешного создания товара
         return redirect('index')
 
+def add_images_to_product(request, product_id):
+    if request.method == 'POST' and request.FILES.getlist('images'):
+        product = get_object_or_404(Product, pk=product_id)
+        image_extensions = ['.jpg', '.jpeg', '.png']
+        images = [image for image in request.FILES.getlist('images') if os.path.splitext(image.name)[1].lower() in image_extensions]
+        for image in images:
+            ProductImages.objects.create(product=product, image=image)
+        product_images = ProductImages.objects.filter(product=product_id)
+        image_urls = [unquote(image.image.url) for image in product_images]
+        data = {'images': image_urls}
+        return JsonResponse(data)
+    return JsonResponse({'error': 'Неверный запрос или отсутствуют изображения.'}, status=400)
+
+
+def delete_images(request, product_id):
+    if request.method == 'POST':
+        deleted_slides = request.POST.getlist('deleted_slides[]')
+        for i in deleted_slides:
+            ProductImages.objects.filter(image=i.replace('/media/', '')).delete()
+        return HttpResponse(status=200)
+
+def delete_image(request, product_id):
+    if request.method == 'GET':
+        product = get_object_or_404(Product, pk=product_id)
+        images = ProductImages.objects.filter(product=product)
+        image_urls = [image.image.url for image in images]
+        return JsonResponse({'images': image_urls})
+
+    elif request.method == 'POST':
+        image_id = int(request.POST.get('image_id'))
+        # Удаление изображения из базы данных
+
+        images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
+        image = images[image_id]
+        image_path = image.image.path
+        if default_storage.exists(image_path):
+            default_storage.delete(image_path)
+        image.delete()
+        return JsonResponse({'images': ProductImages.objects.filter(product=Product.objects.get(id=product_id))})
+
+def assign_main_photo(request, product_id):
+    if request.method == 'POST':
+        new_image = request.POST.get('new_image')
+        new_image = new_image.replace('/media/', '')
+        product = Product.objects.get(pk=product_id)
+        product.image = new_image
+        product.save()
+        data = {
+            'images': Product.objects.get(pk=product_id).image.url
+        }
+        return JsonResponse(data)
+
+def delete_product(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('pk')
+        product = Product.objects.filter(pk=product_id)
+        product.delete()
+        data = {
+            'delete': 'True'
+        }
+        return JsonResponse(data)
 
 def remove_background_view(request):
     if request.method == 'POST':

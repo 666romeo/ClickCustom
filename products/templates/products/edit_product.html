@@ -1,101 +1,62 @@
 {% extends 'products/base.html' %}
 {% load static %}
-
-{% block css %}
-    <style type="text/css">
-        .product_edit_buttons {
-            display: flex;
-            justify-content: center;
-        }
-        .product_edit_buttons button {
-            font-size: 20px;
-            border-radius: 5px;
-            border: none;
-            color: white;
-            padding: 10px 35px;
-            transition-duration: 0.3s;
-        }
-        .product_edit_save_changes {
-            background-color: #5D71DD;
-        }
-        .product_edit_delete {
-            margin-right: 20px;
-            background-color: #ff464b;
-        }
-        .product_edit_buttons button:hover {
-            box-shadow: 0 0 5px black;
-            filter: brightness(0.7);
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
-                <div class="product_content_start">
-                    <div class="product_detail_photos">
-                        <div class="carousel">
-                            <button class="carousel_button_previous"><img src="{% static 'svg/arrow_up.svg' %}" alt=""></button>
-                            <ul class="slides" style="height: 530px; display: block;">
-                            {% for image in images %}
-                                <li class="slide">
-                                    <img src="{{ image.image.url }}" alt="">
-                                </li>
-                            {% endfor %}
-                            </ul>
-                            <button class="carousel_button_next"><img src="{% static 'svg/arrow_down.svg' %}" alt=""></button>
-                        </div>
+    <div id="popupMessage">
+      У продукта должно быть хотя бы одно фото!
+    </div>
+        <div id="deleted-slides-container"></div>
+        <div class="product_content_start">
+            <div class="product_detail_photos">
+                <div class="carousel">
+                    <button class="carousel_button_previous"><img src="{% static 'svg/arrow_up.svg' %}" alt=""></button>
+                    <ul class="slides" style="height: 530px; display: block;">
+                    {% for image in images %}
+                        <li class="slide">
+                            <img src="{{ image.image.url }}" alt="">
+                            <svg style="margin-top: 3px; margin-right: 2px;" class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    <button class="carousel_button_next"><img src="{% static 'svg/arrow_down.svg' %}" alt=""></button>
+                </div>
+            </div>
+        {% for item in product %}
+            <div class="detail_main_photo_article">
+                <div class="detail_main_photo_close"><img class="detail_main_photo_close_on" src="{% static 'svg/close.svg' %}" alt=""></div>
+                <div class="detail_product_loupe">
+                    <img class="loupe_photo" src="{% static 'svg/loupe_name_photo.svg' %}" alt="">
+                </div>
+                <img class="detail_product_main_photo" src="{{ item.image.url }}" alt="">
+                {{ form.images }}
+            </div>
+            <div class="product_information">
+                <div class="detail_product">
+                    <span class="detail_product_name_edit" style="font-size: 15px;">Название: <input type="text" name="name" value="{{ item.name }}"></span>
 
-{% for item in product %}
-                    </div>
-                    <div class="detail_main_photo_article">
-                        <div class="detail_main_photo_close"><img class="detail_main_photo_close_on" src="{% static 'svg/close.svg' %}" alt=""></div>
-                        <div class="detail_product_loupe">
-                            <img class="loupe_photo" src="{% static 'svg/loupe_name_photo.svg' %}" alt="">
-                        </div>
-                        <img class="detail_product_main_photo" src="{{ item.image.url }}" alt="">
-                    </div>
-
-
-
-                    <div class="product_information">
-                        <div class="detail_product">
-                            <span class="detail_product_name">{{ item.name }}</span>
-                            <span class="detail_product_price">Цена: {{ item.price }} ₽</span>
-                        </div>
-                        <div class="product_edit_buttons">
-                            <form method="post" action="{% url 'product:product_edit' item.id %}">
-                                {% csrf_token %}
-                                <button class="product_edit_delete">Удалить товар</button>
-                            </form>
-                                <button class="product_edit_save_changes">Сохранить изменения</button>
-
-                        </div>
-
+                    <span class="detail_product_price_edit" style="font-size: 15px;">Цена: <input type="text" name="price" value="{{ item.price }}"></span>
+                </div>
+                <div class="product_edit_buttons">
+                    <div class="product_edit_buttons">
+                        <button type="button" class="product_edit_delete" data-item-id="{{ item.id }}">Удалить товар</button>
+                        <button id="save-button" type="submit" class="product_edit_save_changes">Сохранить изменения</button>
                     </div>
                 </div>
-                <div class="product_description">
-                    <span>{{ item.description }}</span>
-                </div>
-{% endfor %}
+            </div>
+        </div>
+        <div class="product_description">
+            <span class="detail_product_description_edit" style="font-size: 15px;">Описание:<textarea type="text" name="description">{{ item.description }}</textarea></span>
+        </div>
+        {% endfor %}
+    <div id="success-message" class="success-message" style="display: none;">
+        Изменения сохранены.
+    </div>
+
 {% endblock %}
 {% block script %}
-    <script>
-        contact_with_brand
-    </script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('img.product_favorite').each(function(i) {
-                $(this).click(function() {
-                    $('#' + (i+1)).toggleClass('product_favorite_active');
-                });
-            });
-        });
-    </script>
     <script>
         let slides = $('.slide img');
         let prevButton = $('.carousel_button_previous');
         let nextButton = $('.carousel_button_next');
-
-        console.log(slides.length);
         // Проверяем количество изображений
         if (slides.length < 5) {
             prevButton.hide();
@@ -114,6 +75,7 @@
 
             // Добавление класса data-active к выбранному изображению
             $(this).closest('.slide').attr('data-active', true);
+             let selectedIndex = $('.slide').index($(this).closest('.slide'));
 
             let clickedImageSrc = $(this).attr('src');
             $('.detail_product_main_photo').attr('src', clickedImageSrc);
@@ -162,6 +124,258 @@
             document.querySelector('footer').style.display = "flex"
             document.querySelector('header').style.display = "flex"
             activePhoto.classList.remove('main_photo_loupe')
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let deleteButtons = document.querySelectorAll('.product_edit_delete');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    let itemId = button.dataset.itemId;
+                    deleteProduct(itemId);
+                });
+            });
+        });
+
+        function deleteProduct(itemId) {
+            let formData = new FormData();
+            formData.append('pk', itemId);
+            let xhr = new XMLHttpRequest();
+
+            xhr.open('POST', '/delete_product/', true);
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    window.location.href = '/workshop/myproducts/';
+                } else {
+                }
+            };
+            xhr.send(formData);
+        }
+    </script>
+    <script>
+        let srcList = [];
+        // Функция для получения значения CSRF-токена из cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+        function addImagesToProduct(productId, imageFiles) {
+          let formData = new FormData();
+          formData.append('product_id', productId);
+          for (let i = 0; i < imageFiles.length; i++) {
+            formData.append('images', imageFiles[i]);
+          }
+
+          $.ajax({
+            url: `/add_images_to_product/${productId}/`, // Замените на URL вашего представления Django
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr, settings) {
+              xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            },
+            success: function(response) {
+                console.log(response.images)
+                let images = response.images;
+                images.forEach(function(imageUrl) {
+                    let newSlide = $('<li class="slide"></li>');
+                    console.log(imageUrl)
+                    let newImage = $('<img src="' + imageUrl + '" alt="">');
+                    let newSVGdelete = $('<svg style="margin-top: 3px; margin-right: 2px;" class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>')
+                    newSlide.append(newImage);
+                    newSlide.append(newSVGdelete);
+                    $('.slides').append(newSlide);
+                });
+                updateImageDeleteCode();
+            }
+          });
+        }
+
+        function deleteImageFromDatabase(productID, imageId) {
+            let deleteURL = `/delete_image/${productID}/`;
+            $.ajax({
+                url: deleteURL,
+                type: 'POST',
+                data: {
+                    'product_id': productID,
+                    'image_id': imageId
+                },
+                dataType: 'json',
+                beforeSend: function(xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            });
+        }
+        function updateImageDeleteCode() {
+            $('#deleted-slides-container').text('')
+            function handleSlideAttributeChange(mutationsList, observer) {
+              mutationsList.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-active') {
+                  const targetSlide = mutation.target;
+                  const isActive = targetSlide.getAttribute('data-active') === 'true';
+                  const slideIndex = $('.slide').index(targetSlide);
+                }
+              });
+            }
+
+            // Наблюдатель за изменениями в DOM
+            const observer = new MutationObserver(handleSlideAttributeChange);
+
+            // Опции для наблюдателя
+            const observerOptions = {
+              attributes: true, // Наблюдать за изменениями атрибутов
+              attributeFilter: ['data-active'], // Отслеживать только изменения атрибута data-active
+            };
+
+            // Выберите все элементы .slide и добавьте их в список наблюдения
+            const slideElements = $('.slide');
+            slideElements.each((index, element) => {
+              observer.observe(element, observerOptions);
+            });
+            let slideElement = $('.slides .slide').filter(function() {
+              return $(this).find('img').attr('src') === $('.detail_product_main_photo').attr('src');
+            });
+            let index = $('.slides .slide').index(slideElement);
+
+            $('.slide').eq(index).attr('data-active', 'true');
+            $('.detail_product_main_photo').attr('src', $('.slide').eq(index).find('img').attr('src'))
+            let svgElement = $('.delete-icon');
+
+            // Создание массива перед удалением изображений
+            let initialSlides = $('.slide').map(function() {
+                return $(this).find('img').attr('src');
+            }).get();
+
+            svgElement.on('click', function() {
+                let imageContainer = $(this).parent();
+                let slideCount = $('.slide').length-2;
+                if (slideCount >= 0) {
+                    let index = $('.slide[data-active="true"]').index();
+
+                    $('.detail_product_main_photo').attr('src', $('.slide[data-active="true"]').find('img').attr('src'))
+                    $('.slide[data-active="true"]').removeAttr('data-active');
+                    if (index >= slideCount) {
+                        index -= 2
+                    }
+                    index += 1
+                    $('.detail_product_main_photo').attr('src', $('.slide').eq(index).find('img').attr('src'))
+                    srcList.push($('.detail_product_main_photo').attr('src'));
+                    $('.slide').eq(index).attr('data-active', 'true');
+                    let activeIndex = $('.slide[data-active="true"]').index();
+                    imageContainer.remove();
+                    if (activeIndex > slideCount) {
+                        activeIndex -=1
+                    }
+                    $('.slide[data-active="true"]').removeAttr('data-active');
+                    $('.slide').eq(activeIndex).attr('data-active', 'true');
+                    let new_main_photo = $('.slide').eq(activeIndex).find('img').attr('src')
+                    $('.detail_product_main_photo').attr('src', new_main_photo)
+
+                    // Создание массива со всеми оставшимися элементами .slide
+                    let remainingSlides = $('.slide').map(function() {
+                        return $(this).find('img').attr('src');
+                    }).get();
+
+                     deletedSlides = initialSlides.filter(function(src) {
+                        return !remainingSlides.includes(src);
+                    });
+
+                    // Преобразование массива в строку и запись в блок
+                    $('#deleted-slides-container').text(deletedSlides.join(','));
+
+                    // Вывод содержимого блока в консоль
+                    console.log($('#deleted-slides-container').text());
+                }
+            });
+            return deletedSlides;
+        }
+
+        $('#id_images').on('change', function() {
+            let files = Array.from(this.files);
+            let productId = {{ product_id }};
+            $('.slide').remove();
+            addImagesToProduct(productId, files);
+          });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            $('#deleted-slides-container').text('')
+            updateImageDeleteCode();
+        });
+
+        let saveButton = document.getElementById("save-button");
+
+        // Добавьте обработчик события на кнопку "Сохранить изменения"
+        saveButton.addEventListener("click", function(event) {
+
+            // Получите ссылки на поля формы
+            let nameInput = document.querySelector('input[name="name"]');
+            let priceInput = document.querySelector('input[name="price"]');
+            let descriptionInput = document.querySelector('textarea[name="description"]');
+            let mainImage = $('.slide[data-active="true"]').find('img').attr('src');
+
+            // Создайте объект FormData
+            let formData = new FormData();
+
+            // Добавьте значения полей в объект FormData
+            formData.append('product_id', {{ product_id }});
+            formData.append("name", nameInput.value);
+            formData.append("price", priceInput.value);
+            formData.append("description", descriptionInput.value);
+            formData.append("main_image", mainImage);
+            let csrftoken = getCookie('csrftoken');
+            // Отправьте POST-запрос с использованием Fetch API
+            fetch(`/product/edit/{{ product_id }}/`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                  'X-CSRFToken': csrftoken
+                }
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    let deletedSlidesText = $('#deleted-slides-container').text();
+                    let deletedSlidesArray = deletedSlidesText.split(',');
+                    console.log(deletedSlidesArray);
+                    $.ajax({
+                        url: `/delete_images/{{ product_id }}/`,
+                        type: 'POST',
+                        data: {
+                            'product_id': {{ product_id }},
+                            'deleted_slides': deletedSlidesArray
+                        },
+                        dataType: 'json',
+                        beforeSend: function (xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        }
+                    });
+                    window.location.href = `/product/edit/{{ product_id }}`;
+                } else {
+                  // Ошибка при выполнении запроса
+                  console.log("Ошибка выполнения запроса:", response.status);
+                }
+            })
+            .catch(function(error) {
+                // Ошибка при выполнении запроса
+                console.log("Ошибка выполнения запроса:", error);
+            });
+
+            // Прервите отправку формы
+            event.preventDefault();
         });
     </script>
 {% endblock %}
