@@ -108,15 +108,15 @@ class DetailProductView(TitleMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product_id = self.kwargs['pk']
-        recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
-        max_items = 5
-
-        if recent_items.count() >= max_items:
-            oldest_timestamp = recent_items[max_items - 1].timestamp
-            recent_items.exclude(timestamp__gte=oldest_timestamp).delete()
-        if product_id in recent_items.values_list('product_id', flat=True):
-            recent_items.filter(product_id=product_id).delete()
-        RecentlyViewed.objects.create(user=self.request.user, product=get_object_or_404(Product, pk=product_id))
+        if self.request.user.id is not None:
+            recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
+            max_items = 5
+            if recent_items.count() >= max_items:
+                oldest_timestamp = recent_items[max_items - 1].timestamp
+                recent_items.exclude(timestamp__gte=oldest_timestamp).delete()
+            if product_id in recent_items.values_list('product_id', flat=True):
+                recent_items.filter(product_id=product_id).delete()
+            RecentlyViewed.objects.create(user=self.request.user, product=get_object_or_404(Product, pk=product_id))
 
         product = Product.objects.filter(id=product_id)
         images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
@@ -221,8 +221,17 @@ def add_images_to_product(request, product_id):
 def delete_images(request, product_id):
     if request.method == 'POST':
         deleted_slides = request.POST.getlist('deleted_slides[]')
+        deleted_slides = [unquote(image) for image in deleted_slides]
         for i in deleted_slides:
-            ProductImages.objects.filter(image=i.replace('/media/', '')).delete()
+            for y in ProductImages.objects.filter(product=Product.objects.get(id=product_id)):
+                if str(y.image.url) == str(i):
+                    spis = []
+                    product_images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
+                    for z in product_images:
+                        spis.append(z.image.url)
+                    index = spis.index(str(i))
+                    image = ProductImages.objects.filter(product=Product.objects.get(id=product_id))[index]
+                    image.delete()
         return HttpResponse(status=200)
 
 def delete_image(request, product_id):

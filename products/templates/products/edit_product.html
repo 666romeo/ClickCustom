@@ -74,11 +74,16 @@
             $('.slide[data-active]').removeAttr('data-active');
 
             // Добавление класса data-active к выбранному изображению
-            $(this).closest('.slide').attr('data-active', true);
-             let selectedIndex = $('.slide').index($(this).closest('.slide'));
+            $(this).closest('.slide').attr('data-active', 'true');
+            let selectedIndex = $('.slide').index($(this).closest('.slide'));
 
             let clickedImageSrc = $(this).attr('src');
             $('.detail_product_main_photo').attr('src', clickedImageSrc);
+
+            // Перемещение выбранного слайда на первое место
+            let slidesContainer = $('.slides');
+            let selectedSlide = $(this).closest('.slide');
+            slidesContainer.prepend(selectedSlide);
         });
         let handleImageChange = (offset) =>{
             let activeSlide = document.querySelector('[data-active]')
@@ -190,11 +195,9 @@
               xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
             },
             success: function(response) {
-                console.log(response.images)
                 let images = response.images;
                 images.forEach(function(imageUrl) {
                     let newSlide = $('<li class="slide"></li>');
-                    console.log(imageUrl)
                     let newImage = $('<img src="' + imageUrl + '" alt="">');
                     let newSVGdelete = $('<svg style="margin-top: 3px; margin-right: 2px;" class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>')
                     newSlide.append(newImage);
@@ -264,6 +267,7 @@
             svgElement.on('click', function() {
                 let imageContainer = $(this).parent();
                 let slideCount = $('.slide').length-2;
+                console.log(slideCount)
                 if (slideCount >= 0) {
                     let index = $('.slide[data-active="true"]').index();
 
@@ -291,18 +295,19 @@
                         return $(this).find('img').attr('src');
                     }).get();
 
-                     deletedSlides = initialSlides.filter(function(src) {
+                     let deletedSlides = initialSlides.filter(function(src) {
                         return !remainingSlides.includes(src);
                     });
-
                     // Преобразование массива в строку и запись в блок
                     $('#deleted-slides-container').text(deletedSlides.join(','));
-
-                    // Вывод содержимого блока в консоль
-                    console.log($('#deleted-slides-container').text());
+                }
+                if (slideCount === -1) {
+                    $('#popupMessage').addClass('show'); // Показываем всплывающий блок
+                    setTimeout(function() {
+                        $('#popupMessage').removeClass('show'); // Скрываем всплывающий блок через 3 секунды
+                    }, 3000);
                 }
             });
-            return deletedSlides;
         }
 
         $('#id_images').on('change', function() {
@@ -350,7 +355,6 @@
                 if (response.ok) {
                     let deletedSlidesText = $('#deleted-slides-container').text();
                     let deletedSlidesArray = deletedSlidesText.split(',');
-                    console.log(deletedSlidesArray);
                     $.ajax({
                         url: `/delete_images/{{ product_id }}/`,
                         type: 'POST',
@@ -359,7 +363,7 @@
                             'deleted_slides': deletedSlidesArray
                         },
                         dataType: 'json',
-                        beforeSend: function (xhr, settings) {
+                        beforeSend: function (xhr) {
                             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                         }
                     });

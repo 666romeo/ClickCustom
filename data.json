@@ -32,55 +32,13 @@
     }
 },
 {
-    "model": "users.user",
-    "pk": 1,
-    "fields": {
-        "password": "pbkdf2_sha256$260000$XtDQeUhxjHvI62R8uSZXmT$X9Bw2jv7xASuhz0AOl3JtR3srSuneZctMZ4IuMQ/Ypw=",
-        "last_login": "2023-07-02T20:34:30.921Z",
-        "is_superuser": true,
-        "username": "vokler",
-        "first_name": "",
-        "last_name": "",
-        "email": "brovtsinegor@gmail.com",
-        "is_staff": true,
-        "is_active": true,
-        "date_joined": "2023-07-02T20:05:31.413Z",
-        "image": "users_images/123_oIb0tn9.png",
-        "description": null,
-        "town": null,
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
-    "model": "users.user",
-    "pk": 2,
-    "fields": {
-        "password": "pbkdf2_sha256$260000$5oCcRRldUbhdjsABQmv88L$qvaco4YKU1apTDdsV97fwktk5x1+z27PIl5zrEZCotA=",
-        "last_login": "2023-07-02T20:32:51.929Z",
-        "is_superuser": false,
-        "username": "alposomn",
-        "first_name": "",
-        "last_name": "",
-        "email": "ferkosshow1999@gmail.com",
-        "is_staff": false,
-        "is_active": true,
-        "date_joined": "2023-07-02T20:32:51.686Z",
-        "image": "users_images/1111.jpg",
-        "description": null,
-        "town": null,
-        "groups": [],
-        "user_permissions": []
-    }
-},
-{
     "model": "products.product",
     "pk": 1,
     "fields": {
         "name": "Корсет двусторонний с боа",
         "description": "Двусторонний корсет из винтажной ткани с принтом и боа из перьев. Корсет выполнен из хлопка. Лямки и шнуровка завязывается на корсетные шнурки разных цветов. Носить можно любой из сторон наружу. В корсет вставлены косточки. Боа из перьев крепится на прозрачные кнопки.\r\n💕👼💕\r\nРазмеры: S-L (ОГ - от 88 до 94, ОТ - от 65 до 70 )\r\nПараметры модели: рост 167, ОБ-93, ОТ-67, ОГ-89",
         "price": "6500.00",
-        "image": "products_images/image.jpg",
+        "image": "products_images/product1_photo1.jpg",
         "category": 2
     }
 },
@@ -91,7 +49,7 @@
         "name": "Шарф-змеюка",
         "description": "Шарф змеюка.\r\nШарф змеюка выполнен из стрейч-атласа. В длину 3м, в ширину 5,5см. Набит синтепоном. По середине расположена бирка.",
         "price": "1800.00",
-        "image": "products_images/image_Gf8N1du.jpg",
+        "image": "products_images/product2_photo1.jpg",
         "category": 4
     }
 },
@@ -102,7 +60,7 @@
         "name": "Двустороння синтепоновая куртка",
         "description": "Двусторонняя синтепоновая куртка.\r\nДвусторонняя куртка на синтепоне. Внешний материал - хлопок, покрытый водоотталкивающим раствором. С одной стороны имеет принт, с другой аппликацию пса и звездочек. С каждой из сторон так же имеется вышивка. Курточка застегивается при помощи голубых металлических кнопок. Синтепон рассчитан на температуру до -5/-10 градусов. Капюшон заострен, имеет форму колпака. На конце с каждой из сторон располагается цветная кисточка.\r\n❄️☃️🌨️",
         "price": "9000.00",
-        "image": "products_images/image_Ct6InTM.jpg",
+        "image": "products_images/product3_photo1.jpg",
         "category": 2
     }
 },
@@ -113,8 +71,50 @@
         "name": "Шопер с птицами",
         "description": "Шопер с птицами летящими на юга. Очень приятный голубой хлопок с принтом. Внутри белая подкладка и кармашек, а еще бирочка снаружи. «Улетел» еще в первый день после того как попал в магазин ;)\r\n🍂🕊️🌅",
         "price": "1700.00",
-        "image": "products_images/image_7ohKDyt.jpg",
+        "image": "products_images/product4_photo1.jpg",
         "category": 4
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$260000$XtDQeUhxjHvI62R8uSZXmT$X9Bw2jv7xASuhz0AOl3JtR3srSuneZctMZ4IuMQ/Ypw=",
+        "last_login": "2023-07-05T20:25:11.199Z",
+        "is_superuser": true,
+        "username": "vokler",
+        "first_name": "",
+        "last_name": "",
+        "email": "brovtsinegor@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2023-07-02T20:05:31.413Z",
+        "image": "users_images/vokler.jpg",
+        "description": "Я vokler",
+        "town": "Калининград",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$260000$5oCcRRldUbhdjsABQmv88L$qvaco4YKU1apTDdsV97fwktk5x1+z27PIl5zrEZCotA=",
+        "last_login": "2023-07-05T20:24:40.818Z",
+        "is_superuser": false,
+        "username": "alposomn",
+        "first_name": "",
+        "last_name": "",
+        "email": "ferkosshow1999@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2023-07-02T20:32:51.686Z",
+        "image": "users_images/alposomn.jpg",
+        "description": "Я alposomn",
+        "town": "Калининград",
+        "groups": [],
+        "user_permissions": []
     }
 },
 {
@@ -146,7 +146,7 @@
     "pk": 4,
     "fields": {
         "product": 4,
-        "author": 2
+        "author": 1
     }
 },
 {
@@ -154,7 +154,7 @@
     "pk": 1,
     "fields": {
         "product": 1,
-        "image": "product_images/product1_photo1.jpg"
+        "image": "products_images/product1_photo2.jpg"
     }
 },
 {
@@ -162,7 +162,7 @@
     "pk": 2,
     "fields": {
         "product": 1,
-        "image": "product_images/product1_photo2.jpg"
+        "image": "products_images/product1_photo3.jpg"
     }
 },
 {
@@ -170,7 +170,7 @@
     "pk": 3,
     "fields": {
         "product": 1,
-        "image": "product_images/product1_photo3.jpg"
+        "image": "/products_images/product1_photo1.jpg"
     }
 },
 {
@@ -178,7 +178,7 @@
     "pk": 4,
     "fields": {
         "product": 2,
-        "image": "product_images/product2_photo1.jpg"
+        "image": "products_images/product2_photo2.jpg"
     }
 },
 {
@@ -186,7 +186,7 @@
     "pk": 5,
     "fields": {
         "product": 2,
-        "image": "product_images/product2_photo2.jpg"
+        "image": "products_images/product2_photo3.jpg"
     }
 },
 {
@@ -194,7 +194,7 @@
     "pk": 6,
     "fields": {
         "product": 2,
-        "image": "product_images/product2_photo3.jpg"
+        "image": "/products_images/product2_photo1.jpg"
     }
 },
 {
@@ -202,7 +202,7 @@
     "pk": 7,
     "fields": {
         "product": 3,
-        "image": "product_images/product3_photo1.jpg"
+        "image": "products_images/product3_photo2.jpg"
     }
 },
 {
@@ -210,7 +210,7 @@
     "pk": 8,
     "fields": {
         "product": 3,
-        "image": "product_images/product3_photo2.jpg"
+        "image": "products_images/product3_photo3.jpg"
     }
 },
 {
@@ -218,7 +218,7 @@
     "pk": 9,
     "fields": {
         "product": 3,
-        "image": "product_images/product3_photo3.jpg"
+        "image": "/products_images/product3_photo1.jpg"
     }
 },
 {
@@ -226,7 +226,7 @@
     "pk": 10,
     "fields": {
         "product": 4,
-        "image": "product_images/product4_photo1.jpg"
+        "image": "products_images/product4_photo2.jpg"
     }
 },
 {
@@ -234,7 +234,7 @@
     "pk": 11,
     "fields": {
         "product": 4,
-        "image": "product_images/product4_photo2.jpg"
+        "image": "products_images/product4_photo3.jpg"
     }
 },
 {
@@ -242,7 +242,7 @@
     "pk": 12,
     "fields": {
         "product": 4,
-        "image": "product_images/product4_photo3.jpg"
+        "image": "products_images/product4_photo4.jpg"
     }
 },
 {
@@ -250,7 +250,7 @@
     "pk": 13,
     "fields": {
         "product": 4,
-        "image": "product_images/product4_photo4.jpg"
+        "image": "/products_images/product4_photo1.jpg"
     }
 }
 ]

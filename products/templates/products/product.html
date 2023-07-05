@@ -133,7 +133,7 @@
 
         document.querySelector('.detail_main_photo_close').addEventListener('click', function () {
             document.querySelector('.detail_main_photo_close').classList.remove('detail_main_photo_close--active')
-            document.querySelector('html').style.background = "var(--bg-color)"
+            document.querySelector('html').style.background = "let(--bg-color)"
             document.querySelector('.product_detail_photos').style.display = "inline"
             document.querySelector('.main_head').style.display = "flex"
             document.querySelector('.product_information').style.display = "flex"
@@ -151,5 +151,26 @@
         $('.detail_product_main_photo').attr('src', decodedUrl)
         console.log(decodedUrl);
         $('.product_image')
+    </script>
+    <script>
+        let mainPhotoSrc = document.querySelector('.detail_product_main_photo').getAttribute('src');
+        let slideItems = document.querySelectorAll('.slides .slide');
+        let activeSlide = null;
+
+        for (let i = 0; i < slideItems.length; i++) {
+          let slideItem = slideItems[i];
+          let slideImg = slideItem.querySelector('img');
+          let slideImgSrc = slideImg.getAttribute('src');
+
+          if (slideImgSrc === mainPhotoSrc) {
+            slideItem.setAttribute('data-active', 'true');
+            activeSlide = slideItem;
+          }
+        }
+
+        if (activeSlide) {
+          let slidesContainer = document.querySelector('.slides');
+          slidesContainer.prepend(activeSlide);
+        }
     </script>
 {% endblock %}
