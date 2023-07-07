@@ -159,6 +159,7 @@
             xhr.send(formData);
         }
     </script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
     <script>
         let srcList = [];
         // Функция для получения значения CSRF-токена из cookie
@@ -177,53 +178,36 @@
             return cookieValue;
         }
 
+        function dataURItoFile(dataURI, fileName) {
+            let arr = dataURI.split(',');
+            let mime = arr[0].match(/:(.*?);/)[1];
+            let bstr = atob(arr[1]);
+            let n = bstr.length;
+            let u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], fileName, { type: mime });
+        }
 
         function addImagesToProduct(productId, imageFiles) {
-          let formData = new FormData();
-          formData.append('product_id', productId);
-          for (let i = 0; i < imageFiles.length; i++) {
-            formData.append('images', imageFiles[i]);
-          }
+          imageFiles.forEach(function(imageFile) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+              let imageUrl = e.target.result;
+              let newSlide = $('<li class="slide"></li>');
+              let newImage = $('<img src="' + imageUrl + '" alt="">');
+              let newSVGdelete = $('<svg style="margin-top: 3px; margin-right: 2px;" class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>');
+              newSlide.append(newImage);
+              newSlide.append(newSVGdelete);
+              $('.slides').append(newSlide);
+              updateImageDeleteCode();
+            };
 
-          $.ajax({
-            url: `/add_images_to_product/${productId}/`, // Замените на URL вашего представления Django
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            beforeSend: function(xhr, settings) {
-              xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-            },
-            success: function(response) {
-                let images = response.images;
-                images.forEach(function(imageUrl) {
-                    let newSlide = $('<li class="slide"></li>');
-                    let newImage = $('<img src="' + imageUrl + '" alt="">');
-                    let newSVGdelete = $('<svg style="margin-top: 3px; margin-right: 2px;" class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>')
-                    newSlide.append(newImage);
-                    newSlide.append(newSVGdelete);
-                    $('.slides').append(newSlide);
-                });
-                updateImageDeleteCode();
-            }
+            reader.readAsDataURL(imageFile);
           });
         }
 
-        function deleteImageFromDatabase(productID, imageId) {
-            let deleteURL = `/delete_image/${productID}/`;
-            $.ajax({
-                url: deleteURL,
-                type: 'POST',
-                data: {
-                    'product_id': productID,
-                    'image_id': imageId
-                },
-                dataType: 'json',
-                beforeSend: function(xhr, settings) {
-                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-                }
-            });
-        }
         function updateImageDeleteCode() {
             $('#deleted-slides-container').text('')
             function handleSlideAttributeChange(mutationsList, observer) {
@@ -264,10 +248,13 @@
                 return $(this).find('img').attr('src');
             }).get();
 
+            let slidesContainer = $('.slides');
+            let selectedSlide = $('.slide[data-active="true"]');
+            selectedSlide.prependTo(slidesContainer);
+
             svgElement.on('click', function() {
                 let imageContainer = $(this).parent();
                 let slideCount = $('.slide').length-2;
-                console.log(slideCount)
                 if (slideCount >= 0) {
                     let index = $('.slide[data-active="true"]').index();
 
@@ -295,9 +282,16 @@
                         return $(this).find('img').attr('src');
                     }).get();
 
-                     let deletedSlides = initialSlides.filter(function(src) {
+                    // Фильтрация массива для удаленных слайдов
+                    let deletedSlides = initialSlides.filter(function(src) {
                         return !remainingSlides.includes(src);
                     });
+
+                    // Условие для фильтрации элементов, начинающихся с 'data:image'
+                    deletedSlides = deletedSlides.filter(function(src) {
+                        return !src.startsWith('data:image');
+                    });
+
                     // Преобразование массива в строку и запись в блок
                     $('#deleted-slides-container').text(deletedSlides.join(','));
                 }
@@ -312,10 +306,8 @@
 
         $('#id_images').on('change', function() {
             let files = Array.from(this.files);
-            let productId = {{ product_id }};
-            $('.slide').remove();
-            addImagesToProduct(productId, files);
-          });
+            addImagesToProduct({{ product_id }}, files);
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             $('#deleted-slides-container').text('')
@@ -331,28 +323,100 @@
             let nameInput = document.querySelector('input[name="name"]');
             let priceInput = document.querySelector('input[name="price"]');
             let descriptionInput = document.querySelector('textarea[name="description"]');
-            let mainImage = $('.slide[data-active="true"]').find('img').attr('src');
+            let fileImageMain;
 
-            // Создайте объект FormData
-            let formData = new FormData();
+            let newImagesCount = $('.slides li.slide img').filter(function() {
+                return $(this).attr('src').startsWith('data:image');
+            }).length;
+            if (newImagesCount > 0) {
+                let formData = new FormData();
+                formData.append('product_id', {{ product_id }});
+                $('.slides li.slide img').each(function(index, element) {
+                    let imageSrc = $(element).attr('src');
+                    let mainImage = $('.slide[data-active="true"]').find('img').attr('src');
+                    // Проверяем, является ли изображение данными base64
+                    if (imageSrc.startsWith('data:image')) {
+                        let filenameDataImage = 'image' + index + '.png';
+                        let file = dataURItoFile(imageSrc, filenameDataImage);
+                        formData.append('images', file);
+                        if (mainImage === imageSrc) {
+                            fileImageMain = '/media/products_images/' + filenameDataImage;
+                        }
+                    }
+                });
+                $.ajax({
+                    url: `/add_images_to_product/{{ product_id }}/`, // Замените на URL вашего представления Django
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                    },
+                    success: function() {
+                        // Создайте объект FormData
+                        let formData = new FormData();
 
-            // Добавьте значения полей в объект FormData
-            formData.append('product_id', {{ product_id }});
-            formData.append("name", nameInput.value);
-            formData.append("price", priceInput.value);
-            formData.append("description", descriptionInput.value);
-            formData.append("main_image", mainImage);
-            let csrftoken = getCookie('csrftoken');
-            // Отправьте POST-запрос с использованием Fetch API
-            fetch(`/product/edit/{{ product_id }}/`, {
-                method: "POST",
-                body: formData,
-                headers: {
-                  'X-CSRFToken': csrftoken
-                }
-            })
-            .then(function(response) {
-                if (response.ok) {
+                        // Добавьте значения полей в объект FormData
+                        formData.append('product_id', {{ product_id }});
+                        formData.append("name", nameInput.value);
+                        formData.append("price", priceInput.value);
+                        formData.append("description", descriptionInput.value);
+                        if ($('.slide[data-active="true"]').find('img').attr('src').startsWith('data:image')) {
+                            formData.append('main_image', fileImageMain);
+                        } else {
+                            formData.append("main_image", $('.slide[data-active="true"]').find('img').attr('src'));
+                        }
+                        // Отправьте POST-запрос с использованием Fetch API
+                        fetch(`/product/edit/{{ product_id }}/`, {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                              'X-CSRFToken': getCookie('csrftoken')
+                            }
+                        })
+                        .then(function(response) {
+                            if (response.ok) {
+                                let deletedSlidesText = $('#deleted-slides-container').text();
+                                let deletedSlidesArray = deletedSlidesText.split(',');
+                                $.ajax({
+                                    url: `/delete_images/{{ product_id }}/`,
+                                    type: 'POST',
+                                    data: {
+                                        'product_id': {{ product_id }},
+                                        'deleted_slides': deletedSlidesArray
+                                    },
+                                    dataType: 'json',
+                                    beforeSend: function (xhr) {
+                                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                                    },
+                                    success: function() {
+                                        window.location.href = `/product/edit/{{ product_id }}`;
+                                    }
+                                });
+                            }
+                        })
+                    }
+                })
+            } else {
+                let formData = new FormData();
+
+                // Добавьте значения полей в объект FormData
+                formData.append('product_id', {{ product_id }});
+                formData.append("name", nameInput.value);
+                formData.append("price", priceInput.value);
+                formData.append("description", descriptionInput.value);
+                formData.append("main_image", $('.slide[data-active="true"]').find('img').attr('src'));
+
+                // Отправьте POST-запрос с использованием Fetch API
+                fetch(`/product/edit/{{ product_id }}/`, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                      'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(function() {
                     let deletedSlidesText = $('#deleted-slides-container').text();
                     let deletedSlidesArray = deletedSlidesText.split(',');
                     $.ajax({
@@ -365,21 +429,13 @@
                         dataType: 'json',
                         beforeSend: function (xhr) {
                             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        },
+                        success: function() {
+                            window.location.href = `/product/edit/{{ product_id }}`;
                         }
-                    });
-                    window.location.href = `/product/edit/{{ product_id }}`;
-                } else {
-                  // Ошибка при выполнении запроса
-                  console.log("Ошибка выполнения запроса:", response.status);
-                }
-            })
-            .catch(function(error) {
-                // Ошибка при выполнении запроса
-                console.log("Ошибка выполнения запроса:", error);
-            });
-
-            // Прервите отправку формы
-            event.preventDefault();
+                    })
+                })
+            }
         });
     </script>
 {% endblock %}

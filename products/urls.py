@@ -2,7 +2,7 @@ from django.urls import path
 
 from products.views import IndexListView, addProductToFavorite, delete_product, CreateProductView, \
     removeProductFromFavorite,remove_background_view, DetailProductView, AboutView, ConfidentView, OfertaView, \
-    UserFavoritesView, EditProductView, delete_image, add_images_to_product, assign_main_photo, delete_images
+    UserFavoritesView, EditProductView, add_images_to_product, assign_main_photo, delete_images
 
 app_name = 'product'
 
@@ -22,7 +22,6 @@ urlpatterns = [
     path('assign_main_photo/<int:product_id>/', assign_main_photo, name='assign_main_photo'),
     path('add_product_to_favorite/', addProductToFavorite, name='addProductToFavorite'),
     path('delete_images/<int:product_id>/', delete_images, name='delete_images'),
-    path('delete_image/<int:product_id>/', delete_image, name='delete_image'),
     path('remove_product_from_favorite/', removeProductFromFavorite, name='removeProductFromFavorite'),
 ]
 

@@ -24,6 +24,7 @@ from django.http import HttpResponse
 import os
 import re
 from urllib.parse import unquote
+from django.conf import settings
 
 class IndexListView(TitleMixin, ListView):
     model = Product
@@ -66,17 +67,6 @@ class EditProductView(TitleMixin, ListView):
         form = self.form_class()
         context = super().get_context_data(**kwargs)
         product_id = self.kwargs['pk']
-        recent_items = RecentlyViewed.objects.filter(user=self.request.user.id).order_by('-timestamp')
-        max_items = 5
-
-
-        if recent_items.count() >= max_items:
-            oldest_timestamp = recent_items[max_items - 1].timestamp
-            recent_items.exclude(timestamp__gte=oldest_timestamp).delete()
-        if product_id in recent_items.values_list('product_id', flat=True):
-            recent_items.filter(product_id=product_id).delete()
-        RecentlyViewed.objects.create(user=self.request.user, product=get_object_or_404(Product, pk=product_id))
-
         product = Product.objects.filter(id=product_id)
         images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
         author = ProductAuthor.objects.get(product=Product.objects.get(id=product_id))
@@ -221,7 +211,7 @@ def add_images_to_product(request, product_id):
 def delete_images(request, product_id):
     if request.method == 'POST':
         deleted_slides = request.POST.getlist('deleted_slides[]')
-        deleted_slides = [unquote(image) for image in deleted_slides]
+        deleted_slides = [image for image in deleted_slides]
         for i in deleted_slides:
             for y in ProductImages.objects.filter(product=Product.objects.get(id=product_id)):
                 if str(y.image.url) == str(i):
@@ -232,27 +222,11 @@ def delete_images(request, product_id):
                     index = spis.index(str(i))
                     image = ProductImages.objects.filter(product=Product.objects.get(id=product_id))[index]
                     image.delete()
-        return HttpResponse(status=200)
-
-def delete_image(request, product_id):
-    if request.method == 'GET':
-        product = get_object_or_404(Product, pk=product_id)
-        images = ProductImages.objects.filter(product=product)
-        image_urls = [image.image.url for image in images]
-        return JsonResponse({'images': image_urls})
-
-    elif request.method == 'POST':
-        image_id = int(request.POST.get('image_id'))
-        # Удаление изображения из базы данных
-
-        images = ProductImages.objects.filter(product=Product.objects.get(id=product_id))
-        image = images[image_id]
-        image_path = image.image.path
-        if default_storage.exists(image_path):
-            default_storage.delete(image_path)
-        image.delete()
-        return JsonResponse({'images': ProductImages.objects.filter(product=Product.objects.get(id=product_id))})
-
+                    image_path = os.path.join(settings.MEDIA_ROOT + (i.replace('/media', '')).replace('/', '\\'))
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+        return JsonResponse({'status': 'success'})
+#unquote()
 def assign_main_photo(request, product_id):
     if request.method == 'POST':
         new_image = request.POST.get('new_image')
