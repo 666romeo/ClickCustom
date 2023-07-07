@@ -9,16 +9,21 @@ venv\Scripts\activate
 ```
 pip install -r requirements.txt
 ```
-4. Run the command:
+4. Loading fixtures:
+```
+python manage.py loaddata data.json
+```
+5. Run the command:
 ```
 python manage.py runserver
 ```
-6. If you want to change the portable/Docker mode, run the swap_env.py file and select the mode. The default is portable.
+-------------------------------------------------------------------------------------------------------------------------
+7. If you want to change the portable/Docker mode, run the swap_env.py file and select the mode. The default is portable.
 ```
 python swap_env.py
 ```
 ```
 (input) portable/remote
 ```
-6. If you are using remote(Docker) mode, run the command:
+8. If you are using remote(Docker) mode, run the command:
 docker-compose up
